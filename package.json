@@ -1,0 +1,30 @@
+{
+	"name": "@ai-risk-management/ai-risk-modules",
+	"version": "0.0.1",
+	"private": false,
+	"description": "",
+	"keywords": [
+		"ServiceNow",
+		"Now Experience UI Component",
+		"@ai-risk-management/ai-risk-modules"
+	],
+	"readme": "./README.md",
+	"engines": {
+		"node": ">=8.6.0",
+		"npm": ">=5.3.0"
+	},
+	"module": "src/index.js",
+	"dependencies": {
+		"@servicenow/ui-core": "orlando",
+		"@servicenow/ui-renderer-snabbdom": "orlando",
+		"@servicenow/cli-archetype": "17.0.3",
+		"@servicenow/cli-component-archetype": "17.0.3",
+		"@servicenow/sass-theme": "orlando",
+		"@servicenow/sass-kit": "orlando",
+		"@servicenow/library-translate": "orlando"
+	},
+	"devDependencies": {
+		"@servicenow/cli-archetype-dev": "17.0.3",
+		"@servicenow/cli-component-archetype-dev": "17.0.3"
+	}
+}

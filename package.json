@@ -21,7 +21,9 @@
 		"@servicenow/cli-component-archetype": "17.0.3",
 		"@servicenow/sass-theme": "orlando",
 		"@servicenow/sass-kit": "orlando",
-		"@servicenow/library-translate": "orlando"
+		"@servicenow/library-translate": "orlando",
+		"@servicenow/ui-effect-http": "^17.0.1",
+		"@servicenow/now-card": "orlando"
 	},
 	"devDependencies": {
 		"@servicenow/cli-archetype-dev": "17.0.3",

@@ -2,12 +2,25 @@
 
 #create_ticket {
   float: right;
-  margin-right: 40px;
-  margin-top: 10px;
+  margin-right: 60px;
+}
+
+#admin_control_panel {
+  display: inline-block;
+  width: 100%;
+  outline: 2px solid black;
+}
+
+#admin_control_panel_title {
+  margin-left: 40px;
 }
 
 #foundational_risks_loader {
-  margin-top: 80px;
+  margin-top: 40px;
+}
+
+#list_item {
+  margin: 20px;
 }
 
 #foundational_risks_title {
@@ -21,4 +34,10 @@
 #view_foundational_risk {
   float: right;
   margin-right: 40px;
+}
+
+#create_new_foundational_risk{
+  float: right;
+  margin-right: 60px;
+  margin-bottom: 20px;
 }

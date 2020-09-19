@@ -1,1 +1,24 @@
 @import '@servicenow/sass-kit/host';
+
+#create_ticket {
+  float: right;
+  margin-right: 40px;
+  margin-top: 10px;
+}
+
+#foundational_risks_loader {
+  margin-top: 80px;
+}
+
+#foundational_risks_title {
+  margin-left: 40px;
+}
+
+#foundational_risks {
+  list-style-type:none;
+}
+
+#view_foundational_risk {
+  float: right;
+  margin-right: 40px;
+}

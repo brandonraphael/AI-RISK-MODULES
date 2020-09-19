@@ -2,7 +2,7 @@ import {createCustomElement, actionTypes} from '@servicenow/ui-core';
 import snabbdom from '@servicenow/ui-renderer-snabbdom';
 import styles from './styles.scss';
 import { createHttpEffect } from "@servicenow/ui-effect-http";
-
+import "@servicenow/now-loader";
 // Http Effect Function
 // This will be executed when triggered by some action
 // async function httpEffect(url, options, coeffects) {
@@ -29,12 +29,10 @@ import { createHttpEffect } from "@servicenow/ui-effect-http";
 
 // Create the effect for fetching a user
 const fetchUserEffect = ({ properties, dispatch }) => {
-	if (true) {
-		dispatch("SEARCH_RESULTS_REQUESTED", {
-			table: "x_524039_pericrora_ai_foundational_risk",
-			// sysparm_query: `short_descriptionLIKE${properties.searchText}`,
-		});
-	}
+	dispatch("GET_FOUNDATIONAL_RISKS", {
+		table: "x_524039_pericrora_ai_foundational_risk",
+		// sysparm_query: `short_descriptionLIKE${properties.searchText}`,
+	});
 };
 // Handle when user fetch succeeded: log the result
 const handleFetchUserSucceeded = ({action, updateState}) => {
@@ -52,11 +50,49 @@ const handleFetchUserFailed = ({action}) => {
 const handleFetchStarted = ({action}) => console.log("Started fetch of table");
 
 const view = (state, { dispatch }) => {
-	function buttonClicked() {
-		dispatch('USER_FETCHED');
+	// function buttonClicked() {
+	// 	dispatch('USER_FETCHED');
+	// }
+	let foundationalRisks;
+
+	if (state.showLoading) {
+		foundationalRisks = <now-loader id="foundational_risks_loader"></now-loader>
+	} else {
+		foundationalRisks =
+			<div>
+				<h2 id="foundational_risks_title">
+					<u>
+						Foundational Risks
+					</u>
+				</h2>
+				<ul id="foundational_risks">
+					{state.foundationalRisks.length ? (
+						state.foundationalRisks.map((result) => (
+							<li>
+								{result.name}
+								<a href={"https://www.google.com"} id="view_foundational_risk">View</a>
+							</li>
+						))
+					) : (
+						<li>No Foundational Risks Found</li>
+					)}
+				</ul>
+			</div>
 	}
 
-	return;
+	return (
+		<div>
+			<h1>
+				Admin Control Panel
+				<button id="create_ticket">
+					Create Ticket
+				</button>
+			</h1>
+			<div id="admin_control_panel">
+				{foundationalRisks}
+			</div>
+		</div>
+	);
 	// return <button on-click={buttonClicked}>Click me!</button>
 };
 
@@ -69,18 +105,19 @@ createCustomElement('x-524039-ai-risk-modules', {
 		'USER_FETCHED': fetchUserEffect,
 		// This is dispatched from the effect on success, handle it here
 		'FETCH_SUCCEEDED': handleFetchUserSucceeded,
-		SEARCH_RESULTS_REQUESTED: createHttpEffect("/api/now/table/:table", {
+		GET_FOUNDATIONAL_RISKS: createHttpEffect("/api/now/table/:table", {
 			pathParams: ["table"],
-			// queryParams: ["sysparm_query"],
-			successActionType: "SEARCH_RESULTS_FETCHED",
+			startActionType: "GET_FOUNDATIONAL_RISKS_STARTED",
+			successActionType: "GET_FOUNDATIONAL_RISKS_FETCHED",
 		}),
-		SEARCH_RESULTS_FETCHED: ({ action, updateState }) => {
-			console.log("here: ");
-			console.log(action.payload.result);
+		GET_FOUNDATIONAL_RISKS_STARTED: ({ updateState }) =>
+			updateState({ showLoading: true }),
+		GET_FOUNDATIONAL_RISKS_FETCHED: ({ action, updateState }) => {
 			action.payload.result.map((result) => (
 				console.log(result)
 			))
-			// updateState({ searchResults: action.payload.result, showLoading: false });
+
+			updateState({ foundationalRisks: action.payload.result, showLoading: false });
 		},
 		// 'FETCH_SUCCEEDED': (coeffects) => {
 

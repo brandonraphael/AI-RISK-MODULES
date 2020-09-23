@@ -32,8 +32,10 @@ const createNewFoundationalRiskEffect = ({ state, dispatch }) => {
 				}
 		}
 	);
+
 	dispatch("MODAL_CLOSED");
 };
+
 
 const refresh = ({action, updateState}) => {
 	window.location.reload();
@@ -88,7 +90,7 @@ const view = (state, { dispatch, updateState }) => {
 								{
 									label: "Create",
 									variant: "primary",
-									clickActionType: "CREATE_NEW",
+									clickActionType: "CREATE_NEW_FOUNDATIONAL_RISK_METHOD",
 								},
 							]}
 						>
@@ -359,12 +361,10 @@ createCustomElement('x-524039-ai-risk-modules', {
 	renderer: {type: snabbdom},
 	view,
 	actionHandlers: {
+		// actionType handlers
 		[actionTypes.COMPONENT_CONNECTED]: fetchTablesEffect,
-		GET_FOUNDATIONAL_RISKS: createHttpEffect("/api/now/table/:table", {
-			pathParams: ["table"],
-			startActionType: "GET_FOUNDATIONAL_RISKS_STARTED",
-			successActionType: "GET_FOUNDATIONAL_RISKS_FETCHED",
-		}),
+
+		// modal handlers
 		"NOW_MODAL#OPENED_SET": ({ dispatch }) => {
 			dispatch("MODAL_CLOSED")
 		},
@@ -378,14 +378,14 @@ createCustomElement('x-524039-ai-risk-modules', {
 				createNewMI: false
 			});
 		},
-		GET_FOUNDATIONAL_RISKS_STARTED: ({ updateState }) =>
-			updateState({ showFoundationalRisksLoading: true }),
-		GET_FOUNDATIONAL_RISKS_FETCHED: ({ action, updateState }) => {
-			action.payload.result.map((result) => (
-				console.log(result)
-			))
-			updateState({ foundationalRisks: action.payload.result, showFoundationalRisksLoading: false });
-		},
+
+		// common utility handlers
+		'FETCH_SUCCEEDED': handleFetchSucceeded,
+		'FETCH_FAILED': handleFetchFailed,
+		'FETCH_STARTED': handleFetchStarted,
+		'CREATE_NEW_SUCCESS': fetchTablesEffect,
+
+		// business unit handlers
 		GET_BUSINESS_UNITS: createHttpEffect("/api/now/table/:table", {
 			pathParams: ["table"],
 			startActionType: "GET_BUSINESS_UNITS_STARTED",
@@ -399,6 +399,8 @@ createCustomElement('x-524039-ai-risk-modules', {
 			))
 			updateState({ businessUnits: action.payload.result, showBusinessUnitsLoading: false });
 		},
+
+		// master issue handlers
 		GET_MASTER_ISSUES: createHttpEffect("/api/now/table/:table", {
 			pathParams: ["table"],
 			startActionType: "GET_MASTER_ISSUES_STARTED",
@@ -412,12 +414,22 @@ createCustomElement('x-524039-ai-risk-modules', {
 			))
 			updateState({ masterIssues: action.payload.result, showMasterIssuesLoading: false });
 		},
-		'FETCH_SUCCEEDED': handleFetchSucceeded,
-		'FETCH_FAILED': handleFetchFailed,
-		'FETCH_STARTED': handleFetchStarted,
-		'CREATE_NEW': createNewFoundationalRiskEffect,
-		// 'CREATE_NEW': createNewFoundationalRiskEffect,
-		'CREATE_NEW_SUCCESS': refresh,
+
+		// foundational risk handlers
+		GET_FOUNDATIONAL_RISKS: createHttpEffect("/api/now/table/:table", {
+			pathParams: ["table"],
+			startActionType: "GET_FOUNDATIONAL_RISKS_STARTED",
+			successActionType: "GET_FOUNDATIONAL_RISKS_FETCHED",
+		}),
+		GET_FOUNDATIONAL_RISKS_STARTED: ({ updateState }) =>
+			updateState({ showFoundationalRisksLoading: true }),
+		GET_FOUNDATIONAL_RISKS_FETCHED: ({ action, updateState }) => {
+			action.payload.result.map((result) => (
+				console.log(result)
+			))
+			updateState({ foundationalRisks: action.payload.result, showFoundationalRisksLoading: false });
+		},
+		'CREATE_NEW_FOUNDATIONAL_RISK_METHOD': createNewFoundationalRiskEffect,
 		'CREATE_NEW_FOUNDATIONAL_RISK': createHttpEffect("/api/now/table/:table",
 			{
 				pathParams: ["table"],

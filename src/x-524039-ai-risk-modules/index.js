@@ -9,7 +9,6 @@ import "@servicenow/now-loader";
 const fetchTablesEffect = ({ properties, dispatch }) => {
 	dispatch("GET_FOUNDATIONAL_RISKS", {
 		table: "x_524039_pericrora_ai_foundational_risk",
-		// sysparm_query: `short_descriptionLIKE${properties.searchText}`,
 	});
 	dispatch("GET_BUSINESS_UNITS", {
 		table: "x_524039_pericrora_ai_business_unit",
@@ -19,14 +18,17 @@ const fetchTablesEffect = ({ properties, dispatch }) => {
 	});
 };
 
-const createNewFoundationalRiskEffect = ({ action, dispatch }) => {
+const createNewFoundationalRiskEffect = ({ state, dispatch }) => {
+	let riskName = state.riskName ? state.riskName : "";
+	let description = state.description ? state.description : "";
+
 	dispatch("CREATE_NEW_FOUNDATIONAL_RISK",
 		{
 			table: "x_524039_pericrora_ai_foundational_risk",
 			requestData:
 				{
-					name: "New Foundational Risk from POST",
-					description: "Testing."
+					name: riskName,
+					description: description
 				}
 		}
 	);
@@ -94,11 +96,11 @@ const view = (state, { dispatch, updateState }) => {
 								Create New Foundational Risk
 							</h1>
 							Risk Name:
-							<input></input>
+							<input onchange={(e) => updateState({ riskName: e.target.value })}></input>
 							<br/>
 							Description
 							<br/>
-							<textarea></textarea>
+							<textarea onchange={(e) => updateState({ description: e.target.value })}></textarea>
 							<br/>
 							<span id="column">
 								<u>
@@ -414,6 +416,7 @@ createCustomElement('x-524039-ai-risk-modules', {
 		'FETCH_FAILED': handleFetchFailed,
 		'FETCH_STARTED': handleFetchStarted,
 		'CREATE_NEW': createNewFoundationalRiskEffect,
+		// 'CREATE_NEW': createNewFoundationalRiskEffect,
 		'CREATE_NEW_SUCCESS': refresh,
 		'CREATE_NEW_FOUNDATIONAL_RISK': createHttpEffect("/api/now/table/:table",
 			{

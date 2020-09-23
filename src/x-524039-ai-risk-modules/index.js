@@ -19,7 +19,7 @@ const fetchTablesEffect = ({ properties, dispatch }) => {
 };
 
 const createNewFoundationalRiskEffect = ({ state, dispatch }) => {
-	let riskName = state.riskName ? state.riskName : "";
+	let name = state.name ? state.name : "";
 	let description = state.description ? state.description : "";
 
 	dispatch("CREATE_NEW_FOUNDATIONAL_RISK",
@@ -27,7 +27,7 @@ const createNewFoundationalRiskEffect = ({ state, dispatch }) => {
 			table: "x_524039_pericrora_ai_foundational_risk",
 			requestData:
 				{
-					name: riskName,
+					name: name,
 					description: description
 				}
 		}
@@ -36,22 +36,41 @@ const createNewFoundationalRiskEffect = ({ state, dispatch }) => {
 	dispatch("MODAL_CLOSED");
 };
 
+const createNewBusinessUnitEffect = ({ state, dispatch }) => {
+	let name = state.name ? state.name : "";
+	let description = state.description ? state.description : "";
 
-const refresh = ({action, updateState}) => {
-	window.location.reload();
-}
+	dispatch("CREATE_NEW_BUSINESS_UNIT",
+		{
+			table: "x_524039_pericrora_ai_business_unit",
+			requestData:
+				{
+					name: name,
+					description: description
+				}
+		}
+	);
 
-const handleFetchSucceeded = ({action, updateState}) => {
-	console.log("Fetch succeeded!");
-}
+	dispatch("MODAL_CLOSED");
+};
 
-const handleFetchFailed = ({action}) => {
-	console.log("Fetch failed!");
-}
+const createNewMasterIssueEffect = ({ state, dispatch }) => {
+	let name = state.name ? state.name : "";
+	let description = state.description ? state.description : "";
 
-const handleFetchStarted = ({action}) => {
-	console.log("Started fetch of table...");
-}
+	dispatch("CREATE_NEW_MASTER_ISSUE",
+		{
+			table: "x_524039_pericrora_ai_master_issue",
+			requestData:
+				{
+					name: name,
+					description: description
+				}
+		}
+	);
+
+	dispatch("MODAL_CLOSED");
+};
 
 const view = (state, { dispatch, updateState }) => {
 	let foundationalRisks;
@@ -98,7 +117,7 @@ const view = (state, { dispatch, updateState }) => {
 								Create New Foundational Risk
 							</h1>
 							Risk Name:
-							<input onchange={(e) => updateState({ riskName: e.target.value })}></input>
+							<input onchange={(e) => updateState({ name: e.target.value })}></input>
 							<br/>
 							Description
 							<br/>
@@ -229,11 +248,23 @@ const view = (state, { dispatch, updateState }) => {
 									variant: "secondary",
 									clickActionType: "NOW_MODAL#OPENED_SET",
 								},
+								{
+									label: "Create",
+									variant: "primary",
+									clickActionType: "CREATE_NEW_BUSINESS_UNIT_METHOD",
+								},
 							]}
 						>
 							<h1>
-								Try pressing the "Create New FR" button instead!
+								Create New Business Unit
 							</h1>
+							Business Unit Name:
+							<input onchange={(e) => updateState({ name: e.target.value })}></input>
+							<br/>
+							Description
+							<br/>
+							<textarea onchange={(e) => updateState({ description: e.target.value })}></textarea>
+							<br/>
 						</now-modal>
 					) : null}
 					{state.selectedBusinessUnit ? (
@@ -301,11 +332,23 @@ const view = (state, { dispatch, updateState }) => {
 									variant: "secondary",
 									clickActionType: "NOW_MODAL#OPENED_SET",
 								},
+								{
+									label: "Create",
+									variant: "primary",
+									clickActionType: "CREATE_NEW_MASTER_ISSUE_METHOD",
+								},
 							]}
 						>
 							<h1>
-								Try pressing the "Create New FR" button instead!
+								Create New Master Issue
 							</h1>
+							Master Issue Name:
+							<input onchange={(e) => updateState({ name: e.target.value })}></input>
+							<br/>
+							Description
+							<br/>
+							<textarea onchange={(e) => updateState({ description: e.target.value })}></textarea>
+							<br/>
 						</now-modal>
 					) : null}
 					{state.selectedMasterIssue ? (
@@ -380,9 +423,6 @@ createCustomElement('x-524039-ai-risk-modules', {
 		},
 
 		// common utility handlers
-		'FETCH_SUCCEEDED': handleFetchSucceeded,
-		'FETCH_FAILED': handleFetchFailed,
-		'FETCH_STARTED': handleFetchStarted,
 		'CREATE_NEW_SUCCESS': fetchTablesEffect,
 
 		// business unit handlers
@@ -399,6 +439,15 @@ createCustomElement('x-524039-ai-risk-modules', {
 			))
 			updateState({ businessUnits: action.payload.result, showBusinessUnitsLoading: false });
 		},
+		'CREATE_NEW_BUSINESS_UNIT_METHOD': createNewBusinessUnitEffect,
+		'CREATE_NEW_BUSINESS_UNIT': createHttpEffect("/api/now/table/:table",
+			{
+				pathParams: ["table"],
+				method: 'POST',
+				dataParam: 'requestData',
+				successActionType: 'CREATE_NEW_SUCCESS'
+			}
+		),
 
 		// master issue handlers
 		GET_MASTER_ISSUES: createHttpEffect("/api/now/table/:table", {
@@ -414,6 +463,15 @@ createCustomElement('x-524039-ai-risk-modules', {
 			))
 			updateState({ masterIssues: action.payload.result, showMasterIssuesLoading: false });
 		},
+		'CREATE_NEW_MASTER_ISSUE_METHOD': createNewMasterIssueEffect,
+		'CREATE_NEW_MASTER_ISSUE': createHttpEffect("/api/now/table/:table",
+			{
+				pathParams: ["table"],
+				method: 'POST',
+				dataParam: 'requestData',
+				successActionType: 'CREATE_NEW_SUCCESS'
+			}
+		),
 
 		// foundational risk handlers
 		GET_FOUNDATIONAL_RISKS: createHttpEffect("/api/now/table/:table", {

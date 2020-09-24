@@ -6,15 +6,19 @@ import "@servicenow/now-modal";
 import "@servicenow/now-button";
 import "@servicenow/now-loader";
 
+const foundationalRiskTable = "x_524039_pericrora_ai_foundational_risk";
+const businessUnitTable = "x_524039_pericrora_ai_business_unit";
+const masterIssueTable = "x_524039_pericrora_ai_master_issue";
+
 const fetchTablesEffect = ({ properties, dispatch }) => {
 	dispatch("GET_FOUNDATIONAL_RISKS", {
-		table: "x_524039_pericrora_ai_foundational_risk",
+		table: foundationalRiskTable,
 	});
 	dispatch("GET_BUSINESS_UNITS", {
-		table: "x_524039_pericrora_ai_business_unit",
+		table: businessUnitTable
 	});
 	dispatch("GET_MASTER_ISSUES", {
-		table: "x_524039_pericrora_ai_master_issue",
+		table: masterIssueTable,
 	});
 };
 
@@ -24,7 +28,7 @@ const createNewFoundationalRiskEffect = ({ state, dispatch }) => {
 
 	dispatch("CREATE_NEW_FOUNDATIONAL_RISK",
 		{
-			table: "x_524039_pericrora_ai_foundational_risk",
+			table: foundationalRiskTable,
 			requestData:
 				{
 					name: name,
@@ -42,7 +46,7 @@ const createNewBusinessUnitEffect = ({ state, dispatch }) => {
 
 	dispatch("CREATE_NEW_BUSINESS_UNIT",
 		{
-			table: "x_524039_pericrora_ai_business_unit",
+			table: businessUnitTable,
 			requestData:
 				{
 					name: name,
@@ -60,7 +64,7 @@ const createNewMasterIssueEffect = ({ state, dispatch }) => {
 
 	dispatch("CREATE_NEW_MASTER_ISSUE",
 		{
-			table: "x_524039_pericrora_ai_master_issue",
+			table: masterIssueTable,
 			requestData:
 				{
 					name: name,
@@ -198,17 +202,37 @@ const view = (state, { dispatch, updateState }) => {
 								},
 							]}
 						>
-							<h1>
-								{state.selectedFoundationalRisk.name}
-								<now-button id="edit">Edit</now-button>
-							</h1>
-							Foundational Risk
-							<br/><br/>
-							Date Created: {state.selectedFoundationalRisk.sys_created_on}
-							<br/><br/>
-							Created By: {state.selectedFoundationalRisk.sys_created_by}
-							<br/><br/>
-							Description: {state.selectedFoundationalRisk.description}
+							{state.editFR ? (
+								<div>
+									<h1>
+										Editing: <input value={state.selectedFoundationalRisk.name}></input>
+										<now-button id="edit" on-click={() => updateState({ editFR: !state.editFR })}>Edit</now-button>
+									</h1>
+									Foundational Risk
+									<br/><br/>
+									Date Created: {state.selectedFoundationalRisk.sys_created_on}
+									<br/><br/>
+									Created By: {state.selectedFoundationalRisk.sys_created_by}
+									<br/><br/>
+									Description: <input value={state.selectedFoundationalRisk.description}></input>
+									<br/><br/>
+									<now-button>Finish Editing</now-button>
+								</div>
+								) : (
+								<div>
+									<h1>
+										{state.selectedFoundationalRisk.name}
+										<now-button id="edit" on-click={() => updateState({ editFR: !state.editFR })}>Edit</now-button>
+									</h1>
+									Foundational Risk
+									<br/><br/>
+									Date Created: {state.selectedFoundationalRisk.sys_created_on}
+									<br/><br/>
+									Created By: {state.selectedFoundationalRisk.sys_created_by}
+									<br/><br/>
+									Description: {state.selectedFoundationalRisk.description}
+								</div>
+							) }
 						</now-modal>
 					) : null}
 				</ul>
@@ -418,7 +442,8 @@ createCustomElement('x-524039-ai-risk-modules', {
 				selectedMasterIssue: null,
 				createNewFR: false,
 				createNewBU: false,
-				createNewMI: false
+				createNewMI: false,
+				editFR: false
 			});
 		},
 
@@ -480,7 +505,7 @@ createCustomElement('x-524039-ai-risk-modules', {
 			successActionType: "GET_FOUNDATIONAL_RISKS_FETCHED",
 		}),
 		GET_FOUNDATIONAL_RISKS_STARTED: ({ updateState }) =>
-			updateState({ showFoundationalRisksLoading: true }),
+			updateState({ showFoundationalRisksLoading: true, editFR: false }),
 		GET_FOUNDATIONAL_RISKS_FETCHED: ({ action, updateState }) => {
 			action.payload.result.map((result) => (
 				console.log(result)

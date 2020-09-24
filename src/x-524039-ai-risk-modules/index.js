@@ -40,6 +40,26 @@ const createNewFoundationalRiskEffect = ({ state, dispatch }) => {
 	dispatch("MODAL_CLOSED");
 };
 
+const editFoundationalRiskEffect = ({ state, dispatch }) => {
+	let name = state.name ? state.name : "";
+	let description = state.description ? state.description : "";
+	console.log(state.selectedFoundationalRisk.sys_id);
+
+	dispatch("EDIT_FOUNDATIONAL_RISK",
+		{
+			table: foundationalRiskTable,
+			sys_id: state.selectedFoundationalRisk.sys_id,
+			requestData:
+				{
+					name: name,
+					description: description
+				}
+		}
+	);
+
+	dispatch("MODAL_CLOSED");
+}
+
 const createNewBusinessUnitEffect = ({ state, dispatch }) => {
 	let name = state.name ? state.name : "";
 	let description = state.description ? state.description : "";
@@ -205,24 +225,26 @@ const view = (state, { dispatch, updateState }) => {
 							{state.editFR ? (
 								<div>
 									<h1>
-										Editing: <input value={state.selectedFoundationalRisk.name}></input>
-										<now-button id="edit" on-click={() => updateState({ editFR: !state.editFR })}>Edit</now-button>
+										Editing: {state.selectedFoundationalRisk.name}
+										<now-button id="edit" on-click={() => updateState({ editFR: !state.editFR })}>{state.editFR ? "Cancel" : "Edit"}</now-button>
 									</h1>
 									Foundational Risk
+									<br/><br/>
+									Name: <input value={state.selectedFoundationalRisk.name} onchange={(e) => updateState({ name: e.target.value })}></input>
 									<br/><br/>
 									Date Created: {state.selectedFoundationalRisk.sys_created_on}
 									<br/><br/>
 									Created By: {state.selectedFoundationalRisk.sys_created_by}
 									<br/><br/>
-									Description: <input value={state.selectedFoundationalRisk.description}></input>
+									Description: <textarea value={state.selectedFoundationalRisk.description} onchange={(e) => updateState({ description: e.target.value })}></textarea>
 									<br/><br/>
-									<now-button>Finish Editing</now-button>
+									<now-button on-click={() => dispatch("EDIT_FOUNDATIONAL_RISK_METHOD")}>Finish Editing</now-button>
 								</div>
 								) : (
 								<div>
 									<h1>
 										{state.selectedFoundationalRisk.name}
-										<now-button id="edit" on-click={() => updateState({ editFR: !state.editFR })}>Edit</now-button>
+										<now-button id="edit" on-click={() => updateState({ editFR: !state.editFR, name: state.selectedFoundationalRisk.name, description: state.selectedFoundationalRisk.description })}>Edit</now-button>
 									</h1>
 									Foundational Risk
 									<br/><br/>
@@ -517,6 +539,15 @@ createCustomElement('x-524039-ai-risk-modules', {
 			{
 				pathParams: ["table"],
 				method: 'POST',
+				dataParam: 'requestData',
+				successActionType: 'CREATE_NEW_SUCCESS'
+			}
+		),
+		'EDIT_FOUNDATIONAL_RISK_METHOD': editFoundationalRiskEffect,
+		'EDIT_FOUNDATIONAL_RISK': createHttpEffect("/api/now/table/:table/:sys_id",
+			{
+				pathParams: ["table", "sys_id"],
+				method: 'PUT',
 				dataParam: 'requestData',
 				successActionType: 'CREATE_NEW_SUCCESS'
 			}

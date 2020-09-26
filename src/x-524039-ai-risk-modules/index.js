@@ -26,7 +26,7 @@ const createNewFoundationalRiskEffect = ({ state, dispatch }) => {
 	let name = state.name ? state.name : "";
 	let description = state.description ? state.description : "";
 
-	dispatch("CREATE_NEW_FOUNDATIONAL_RISK",
+	dispatch("CREATE",
 		{
 			table: foundationalRiskTable,
 			requestData:
@@ -63,7 +63,7 @@ const createNewBusinessUnitEffect = ({ state, dispatch }) => {
 	let name = state.name ? state.name : "";
 	let description = state.description ? state.description : "";
 
-	dispatch("CREATE_NEW_BUSINESS_UNIT",
+	dispatch("CREATE",
 		{
 			table: businessUnitTable,
 			requestData:
@@ -96,11 +96,20 @@ const editBusinessUnitEffect = ({ state, dispatch }) => {
 	dispatch("MODAL_CLOSED");
 }
 
+const getBusinessUnitEffect = ({ state, dispatch }) => {
+	dispatch("GET",
+		{
+			table: businessUnitTable,
+			sys_id: state.sys_id
+		}
+	);
+}
+
 const createNewMasterIssueEffect = ({ state, dispatch }) => {
 	let name = state.name ? state.name : "";
 	let description = state.description ? state.description : "";
 
-	dispatch("CREATE_NEW_MASTER_ISSUE",
+	dispatch("CREATE",
 		{
 			table: masterIssueTable,
 			requestData:
@@ -407,6 +416,8 @@ const view = (state, { dispatch, updateState }) => {
 	if (state.showMasterIssuesLoading) {
 		masterIssues = <now-loader id="loader"></now-loader>
 	} else {
+		console.log(state)
+
 		masterIssues =
 			<div>
 				<h2 id="title">
@@ -477,9 +488,31 @@ const view = (state, { dispatch, updateState }) => {
 									<br/><br/>
 									Name: <input value={state.selectedMasterIssue.name} onchange={(e) => updateState({ name: e.target.value })}></input>
 									<br/><br/>
+									Priority:
+									<now-dropdown items={[
+										{"id":"Very High (P1)","label":"Very High (P1)"},
+										{"id":"High (P2)","label":"High (P2)"},
+										{"id":"Medium (P3)","label":"Medium (P3)"},
+										{"id":"Low (P4)","label":"Low (P4)"},
+										{"id":"Non-Urgent (P5)","label":"Non-Urgent (P5)"}]} selectedItems={state.selectedMasterIssue.priority} icon="" placeholder="" tooltipContent="" size="md" variant="secondary" select="single" panelFitProps={{}} configAria={{}}>
+									</now-dropdown>
+									<br/><br/>
 									Date Created: {state.selectedMasterIssue.sys_created_on}
 									<br/><br/>
 									Created By: {state.selectedMasterIssue.sys_created_by}
+									<br/><br/>
+									Business Unit(s):
+									<ul>
+										{state.selectedMasterIssue.business_units.length ? (
+											state.selectedMasterIssue.business_units.split(',').map((result) => (
+												<li>
+													{result}
+												</li>
+											))
+										) : (
+											<p>NONE</p>
+										)}
+									</ul>
 									<br/><br/>
 									Description: <textarea value={state.selectedMasterIssue.description} onchange={(e) => updateState({ description: e.target.value })}></textarea>
 									<br/><br/>
@@ -493,9 +526,24 @@ const view = (state, { dispatch, updateState }) => {
 									</h1>
 									Master Issue
 									<br/><br/>
+									Priority: {state.selectedMasterIssue.priority}
+									<br/><br/>
 									Date Created: {state.selectedMasterIssue.sys_created_on}
 									<br/><br/>
 									Created By: {state.selectedMasterIssue.sys_created_by}
+									<br/><br/>
+									Business Unit(s):
+									<ul>
+										{state.selectedMasterIssue.business_units.length ? (
+											state.selectedMasterIssue.business_units.split(',').map((result) => (
+												<li>
+													{result}
+												</li>
+											))
+										) : (
+											<p>NONE</p>
+										)}
+									</ul>
 									<br/><br/>
 									Description: {state.selectedMasterIssue.description}
 								</div>
@@ -561,22 +609,11 @@ createCustomElement('x-524039-ai-risk-modules', {
 			successActionType: "GET_BUSINESS_UNITS_FETCHED",
 		}),
 		GET_BUSINESS_UNITS_STARTED: ({ updateState }) =>
-			updateState({ showBusinessUnitsLoading: true }),
+			updateState({ showBusinessUnitsLoading: true, editBU: false  }),
 		GET_BUSINESS_UNITS_FETCHED: ({ action, updateState }) => {
-			action.payload.result.map((result) => (
-				console.log(result)
-			))
 			updateState({ businessUnits: action.payload.result, showBusinessUnitsLoading: false });
 		},
 		'CREATE_NEW_BUSINESS_UNIT_METHOD': createNewBusinessUnitEffect,
-		'CREATE_NEW_BUSINESS_UNIT': createHttpEffect("/api/now/table/:table",
-			{
-				pathParams: ["table"],
-				method: 'POST',
-				dataParam: 'requestData',
-				successActionType: 'CREATE_NEW_SUCCESS'
-			}
-		),
 
 		// master issue handlers
 		GET_MASTER_ISSUES: createHttpEffect("/api/now/table/:table", {
@@ -585,22 +622,11 @@ createCustomElement('x-524039-ai-risk-modules', {
 			successActionType: "GET_MASTER_ISSUES_FETCHED",
 		}),
 		GET_MASTER_ISSUES_STARTED: ({ updateState }) =>
-			updateState({ showMasterIssuesLoading: true }),
+			updateState({ showMasterIssuesLoading: true, editMI: false  }),
 		GET_MASTER_ISSUES_FETCHED: ({ action, updateState }) => {
-			action.payload.result.map((result) => (
-				console.log(result)
-			))
 			updateState({ masterIssues: action.payload.result, showMasterIssuesLoading: false });
 		},
 		'CREATE_NEW_MASTER_ISSUE_METHOD': createNewMasterIssueEffect,
-		'CREATE_NEW_MASTER_ISSUE': createHttpEffect("/api/now/table/:table",
-			{
-				pathParams: ["table"],
-				method: 'POST',
-				dataParam: 'requestData',
-				successActionType: 'CREATE_NEW_SUCCESS'
-			}
-		),
 
 		// foundational risk handlers
 		GET_FOUNDATIONAL_RISKS: createHttpEffect("/api/now/table/:table", {
@@ -611,13 +637,17 @@ createCustomElement('x-524039-ai-risk-modules', {
 		GET_FOUNDATIONAL_RISKS_STARTED: ({ updateState }) =>
 			updateState({ showFoundationalRisksLoading: true, editFR: false }),
 		GET_FOUNDATIONAL_RISKS_FETCHED: ({ action, updateState }) => {
-			action.payload.result.map((result) => (
-				console.log(result)
-			))
+			// action.payload.result.map((result) => (
+			// 	console.log(result)
+			// ))
 			updateState({ foundationalRisks: action.payload.result, showFoundationalRisksLoading: false });
 		},
 		'CREATE_NEW_FOUNDATIONAL_RISK_METHOD': createNewFoundationalRiskEffect,
-		'CREATE_NEW_FOUNDATIONAL_RISK': createHttpEffect("/api/now/table/:table",
+		'EDIT_FOUNDATIONAL_RISK_METHOD': editFoundationalRiskEffect,
+		'EDIT_BUSINESS_UNIT_METHOD': editBusinessUnitEffect,
+		'EDIT_MASTER_ISSUE_METHOD': editMasterIssueEffect,
+		'GET_BUSINESS_UNIT': getBusinessUnitEffect,
+		'CREATE': createHttpEffect("/api/now/table/:table",
 			{
 				pathParams: ["table"],
 				method: 'POST',
@@ -625,15 +655,19 @@ createCustomElement('x-524039-ai-risk-modules', {
 				successActionType: 'CREATE_NEW_SUCCESS'
 			}
 		),
-		'EDIT_FOUNDATIONAL_RISK_METHOD': editFoundationalRiskEffect,
-		'EDIT_BUSINESS_UNIT_METHOD': editBusinessUnitEffect,
-		'EDIT_MASTER_ISSUE_METHOD': editMasterIssueEffect,
 		'EDIT': createHttpEffect("/api/now/table/:table/:sys_id",
 			{
 				pathParams: ["table", "sys_id"],
 				method: 'PUT',
 				dataParam: 'requestData',
 				successActionType: 'CREATE_NEW_SUCCESS'
+			}
+		),
+		'GET': createHttpEffect("/api/now/table/:table/:sys_id",
+			{
+				pathParams: ["table", "sys_id"],
+				method: 'GET',
+				successActionType: 'GET_SUCCESS'
 			}
 		)
 	},

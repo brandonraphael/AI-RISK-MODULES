@@ -26,6 +26,7 @@
 		"@servicenow/now-button": "^17.0.1",
 		"@servicenow/now-loader": "^17.0.1",
 		"@servicenow/now-modal": "orlando",
+		"@servicenow/now-dropdown": "orlando",
 		"@servicenow/now-card": "orlando"
 	},
 	"devDependencies": {

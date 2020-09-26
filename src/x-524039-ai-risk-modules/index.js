@@ -5,6 +5,7 @@ import { createHttpEffect } from "@servicenow/ui-effect-http";
 import "@servicenow/now-modal";
 import "@servicenow/now-button";
 import "@servicenow/now-loader";
+import "@servicenow/now-dropdown";
 
 const foundationalRiskTable = "x_524039_pericrora_ai_foundational_risk";
 const businessUnitTable = "x_524039_pericrora_ai_business_unit";
@@ -62,6 +63,7 @@ const editFoundationalRiskEffect = ({ state, dispatch }) => {
 const createNewBusinessUnitEffect = ({ state, dispatch }) => {
 	let name = state.name ? state.name : "";
 	let description = state.description ? state.description : "";
+	let goal = state.goal ? state.goal : "";
 
 	dispatch("CREATE",
 		{
@@ -69,6 +71,7 @@ const createNewBusinessUnitEffect = ({ state, dispatch }) => {
 			requestData:
 				{
 					name: name,
+					goal: goal,
 					description: description
 				}
 		}
@@ -80,6 +83,7 @@ const createNewBusinessUnitEffect = ({ state, dispatch }) => {
 const editBusinessUnitEffect = ({ state, dispatch }) => {
 	let name = state.name ? state.name : "";
 	let description = state.description ? state.description : "";
+	let goal = state.goal ? state.goal : "";
 
 	dispatch("EDIT",
 		{
@@ -88,6 +92,7 @@ const editBusinessUnitEffect = ({ state, dispatch }) => {
 			requestData:
 				{
 					name: name,
+					goal: goal,
 					description: description
 				}
 		}
@@ -107,6 +112,7 @@ const getBusinessUnitEffect = ({ state, dispatch }) => {
 
 const createNewMasterIssueEffect = ({ state, dispatch }) => {
 	let name = state.name ? state.name : "";
+	let priority = state.priority ? state.priority : "P1";
 	let description = state.description ? state.description : "";
 
 	dispatch("CREATE",
@@ -115,6 +121,7 @@ const createNewMasterIssueEffect = ({ state, dispatch }) => {
 			requestData:
 				{
 					name: name,
+					priority: priority,
 					description: description
 				}
 		}
@@ -125,6 +132,7 @@ const createNewMasterIssueEffect = ({ state, dispatch }) => {
 
 const editMasterIssueEffect = ({ state, dispatch }) => {
 	let name = state.name ? state.name : "";
+	let priority = state.priority ? state.priority : "P1";
 	let description = state.description ? state.description : "";
 
 	dispatch("EDIT",
@@ -134,6 +142,7 @@ const editMasterIssueEffect = ({ state, dispatch }) => {
 			requestData:
 				{
 					name: name,
+					priority: priority,
 					description: description
 				}
 		}
@@ -310,7 +319,7 @@ const view = (state, { dispatch, updateState }) => {
 
 	let businessUnits;
 	if (state.showBusinessUnitsLoading) {
-		businessUnits = <now-loader id="loader"></now-loader>
+		businessUnits = <div></div>
 	} else {
 		businessUnits =
 			<div>
@@ -353,11 +362,13 @@ const view = (state, { dispatch, updateState }) => {
 							</h1>
 							Business Unit Name:
 							<input onchange={(e) => updateState({ name: e.target.value })}></input>
-							<br/>
+							<br/><br/>
+							Goal:
+							<textarea onchange={(e) => updateState({ goal: e.target.value })}></textarea>
+							<br/><br/>
 							Description
-							<br/>
+							<br/><br/>
 							<textarea onchange={(e) => updateState({ description: e.target.value })}></textarea>
-							<br/>
 						</now-modal>
 					) : null}
 					{state.selectedBusinessUnit ? (
@@ -387,6 +398,9 @@ const view = (state, { dispatch, updateState }) => {
 									<br/><br/>
 									Created By: {state.selectedBusinessUnit.sys_created_by}
 									<br/><br/>
+									Goal:
+									<textarea value={state.selectedBusinessUnit.goal} onchange={(e) => updateState({ goal: e.target.value })}></textarea>
+									<br/><br/>
 									Description: <textarea value={state.selectedBusinessUnit.description} onchange={(e) => updateState({ description: e.target.value })}></textarea>
 									<br/><br/>
 									<now-button on-click={() => dispatch("EDIT_BUSINESS_UNIT_METHOD")}>Finish Editing</now-button>
@@ -403,6 +417,8 @@ const view = (state, { dispatch, updateState }) => {
 									<br/><br/>
 									Created By: {state.selectedBusinessUnit.sys_created_by}
 									<br/><br/>
+									Goal: {state.selectedBusinessUnit.goal}
+									<br/><br/>
 									Description: {state.selectedBusinessUnit.description}
 								</div>
 							) }
@@ -414,7 +430,7 @@ const view = (state, { dispatch, updateState }) => {
 
 	let masterIssues;
 	if (state.showMasterIssuesLoading) {
-		masterIssues = <now-loader id="loader"></now-loader>
+		masterIssues = <div></div>
 	} else {
 		console.log(state)
 
@@ -459,11 +475,22 @@ const view = (state, { dispatch, updateState }) => {
 							</h1>
 							Master Issue Name:
 							<input onchange={(e) => updateState({ name: e.target.value })}></input>
-							<br/>
-							Description
-							<br/>
+							<br/><br/>
+							<p>
+								Note: Master issues will be automatically assigned to any new projects created in the business unit.
+							</p>
+							<br/><br/>
+							Priority:
+							<now-dropdown items={[
+								{"id":"P1","label":"Very High (P1)", "value":"P1"},
+								{"id":"P2","label":"High (P2)", "value":"P2"},
+								{"id":"P3","label":"Medium (P3)", "value":"P3"},
+								{"id":"P4","label":"Low (P4)", "value":"P4"},
+								{"id":"P5","label":"Non-Urgent (P5)", "value":"P5"}]} selectedItems={["P1"]} icon="" placeholder="" tooltipContent="" size="md" variant="secondary" select="single" panelFitProps={{}} configAria={{}}></now-dropdown>
+							<br/><br/>
+							Description:
+							<br/><br/>
 							<textarea onchange={(e) => updateState({ description: e.target.value })}></textarea>
-							<br/>
 						</now-modal>
 					) : null}
 					{state.selectedMasterIssue ? (
@@ -490,12 +517,11 @@ const view = (state, { dispatch, updateState }) => {
 									<br/><br/>
 									Priority:
 									<now-dropdown items={[
-										{"id":"Very High (P1)","label":"Very High (P1)"},
-										{"id":"High (P2)","label":"High (P2)"},
-										{"id":"Medium (P3)","label":"Medium (P3)"},
-										{"id":"Low (P4)","label":"Low (P4)"},
-										{"id":"Non-Urgent (P5)","label":"Non-Urgent (P5)"}]} selectedItems={state.selectedMasterIssue.priority} icon="" placeholder="" tooltipContent="" size="md" variant="secondary" select="single" panelFitProps={{}} configAria={{}}>
-									</now-dropdown>
+										{"id":"P1","label":"Very High (P1)", "value":"P1"},
+										{"id":"P2","label":"High (P2)", "value":"P2"},
+										{"id":"P3","label":"Medium (P3)", "value":"P3"},
+										{"id":"P4","label":"Low (P4)", "value":"P4"},
+										{"id":"P5","label":"Non-Urgent (P5)", "value":"P5"}]} selectedItems={["P1"]} icon="" placeholder="" tooltipContent="" size="md" variant="secondary" select="single" panelFitProps={{}} configAria={{}}></now-dropdown>
 									<br/><br/>
 									Date Created: {state.selectedMasterIssue.sys_created_on}
 									<br/><br/>
@@ -515,6 +541,8 @@ const view = (state, { dispatch, updateState }) => {
 									</ul>
 									<br/><br/>
 									Description: <textarea value={state.selectedMasterIssue.description} onchange={(e) => updateState({ description: e.target.value })}></textarea>
+									<br/><br/>
+									Workflow: {state.selectedMasterIssue.workflow}
 									<br/><br/>
 									<now-button on-click={() => dispatch("EDIT_MASTER_ISSUE_METHOD")}>Finish Editing</now-button>
 								</div>
@@ -546,6 +574,8 @@ const view = (state, { dispatch, updateState }) => {
 									</ul>
 									<br/><br/>
 									Description: {state.selectedMasterIssue.description}
+									<br/><br/>
+									Workflow: {state.selectedMasterIssue.workflow}
 								</div>
 							) }
 						</now-modal>
@@ -580,6 +610,11 @@ createCustomElement('x-524039-ai-risk-modules', {
 	actionHandlers: {
 		// actionType handlers
 		[actionTypes.COMPONENT_CONNECTED]: fetchTablesEffect,
+
+		// dropdown handlers
+		"NOW_DROPDOWN#ITEM_CLICKED": ({ action, updateState }) => {
+			updateState({ priority: action.payload.item.value });
+		},
 
 		// modal handlers
 		"NOW_MODAL#OPENED_SET": ({ dispatch }) => {

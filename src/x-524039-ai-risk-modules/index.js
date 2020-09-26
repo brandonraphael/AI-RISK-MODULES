@@ -43,9 +43,8 @@ const createNewFoundationalRiskEffect = ({ state, dispatch }) => {
 const editFoundationalRiskEffect = ({ state, dispatch }) => {
 	let name = state.name ? state.name : "";
 	let description = state.description ? state.description : "";
-	console.log(state.selectedFoundationalRisk.sys_id);
 
-	dispatch("EDIT_FOUNDATIONAL_RISK",
+	dispatch("EDIT",
 		{
 			table: foundationalRiskTable,
 			sys_id: state.selectedFoundationalRisk.sys_id,
@@ -78,6 +77,25 @@ const createNewBusinessUnitEffect = ({ state, dispatch }) => {
 	dispatch("MODAL_CLOSED");
 };
 
+const editBusinessUnitEffect = ({ state, dispatch }) => {
+	let name = state.name ? state.name : "";
+	let description = state.description ? state.description : "";
+
+	dispatch("EDIT",
+		{
+			table: businessUnitTable,
+			sys_id: state.selectedBusinessUnit.sys_id,
+			requestData:
+				{
+					name: name,
+					description: description
+				}
+		}
+	);
+
+	dispatch("MODAL_CLOSED");
+}
+
 const createNewMasterIssueEffect = ({ state, dispatch }) => {
 	let name = state.name ? state.name : "";
 	let description = state.description ? state.description : "";
@@ -95,6 +113,26 @@ const createNewMasterIssueEffect = ({ state, dispatch }) => {
 
 	dispatch("MODAL_CLOSED");
 };
+
+const editMasterIssueEffect = ({ state, dispatch }) => {
+	let name = state.name ? state.name : "";
+	let description = state.description ? state.description : "";
+
+	dispatch("EDIT",
+		{
+			table: masterIssueTable,
+			sys_id: state.selectedMasterIssue.sys_id,
+			requestData:
+				{
+					name: name,
+					description: description
+				}
+		}
+	);
+
+	dispatch("MODAL_CLOSED");
+}
+
 
 const view = (state, { dispatch, updateState }) => {
 	let foundationalRisks;
@@ -326,19 +364,39 @@ const view = (state, { dispatch, updateState }) => {
 							]}
 
 						>
-							<h1>
-								{state.selectedBusinessUnit.name}
-								<now-button id="edit">Edit</now-button>
-							</h1>
-							Business Unit
-							<br/><br/>
-							Date Created: {state.selectedBusinessUnit.sys_created_on}
-							<br/><br/>
-							Created By: {state.selectedBusinessUnit.sys_created_by}
-							<br/><br/>
-							Goal: {state.selectedBusinessUnit.goal}
-							<br/><br/>
-							Description: {state.selectedBusinessUnit.description}
+							{state.editBU ? (
+								<div>
+									<h1>
+										Editing: {state.selectedBusinessUnit.name}
+										<now-button id="edit" on-click={() => updateState({ editBU: !state.editBU })}>{state.editBU ? "Cancel" : "Edit"}</now-button>
+									</h1>
+									Business Unit
+									<br/><br/>
+									Name: <input value={state.selectedBusinessUnit.name} onchange={(e) => updateState({ name: e.target.value })}></input>
+									<br/><br/>
+									Date Created: {state.selectedBusinessUnit.sys_created_on}
+									<br/><br/>
+									Created By: {state.selectedBusinessUnit.sys_created_by}
+									<br/><br/>
+									Description: <textarea value={state.selectedBusinessUnit.description} onchange={(e) => updateState({ description: e.target.value })}></textarea>
+									<br/><br/>
+									<now-button on-click={() => dispatch("EDIT_BUSINESS_UNIT_METHOD")}>Finish Editing</now-button>
+								</div>
+							) : (
+								<div>
+									<h1>
+										{state.selectedBusinessUnit.name}
+										<now-button id="edit" on-click={() => updateState({ editBU: !state.editBU, name: state.selectedBusinessUnit.name, description: state.selectedBusinessUnit.description })}>Edit</now-button>
+									</h1>
+									Business Unit
+									<br/><br/>
+									Date Created: {state.selectedBusinessUnit.sys_created_on}
+									<br/><br/>
+									Created By: {state.selectedBusinessUnit.sys_created_by}
+									<br/><br/>
+									Description: {state.selectedBusinessUnit.description}
+								</div>
+							) }
 						</now-modal>
 					) : null}
 				</ul>
@@ -409,17 +467,39 @@ const view = (state, { dispatch, updateState }) => {
 								},
 							]}
 						>
-							<h1>
-								{state.selectedMasterIssue.name}
-								<now-button id="edit">Edit</now-button>
-							</h1>
-							Master Issue
-							<br/><br/>
-							Date Created: {state.selectedMasterIssue.sys_created_on}
-							<br/><br/>
-							Created By: {state.selectedMasterIssue.sys_created_by}
-							<br/><br/>
-							Description: {state.selectedMasterIssue.description}
+							{state.editMI ? (
+								<div>
+									<h1>
+										Editing: {state.selectedMasterIssue.name}
+										<now-button id="edit" on-click={() => updateState({ editMI: !state.editMI })}>{state.editMI ? "Cancel" : "Edit"}</now-button>
+									</h1>
+									Master Issue
+									<br/><br/>
+									Name: <input value={state.selectedMasterIssue.name} onchange={(e) => updateState({ name: e.target.value })}></input>
+									<br/><br/>
+									Date Created: {state.selectedMasterIssue.sys_created_on}
+									<br/><br/>
+									Created By: {state.selectedMasterIssue.sys_created_by}
+									<br/><br/>
+									Description: <textarea value={state.selectedMasterIssue.description} onchange={(e) => updateState({ description: e.target.value })}></textarea>
+									<br/><br/>
+									<now-button on-click={() => dispatch("EDIT_MASTER_ISSUE_METHOD")}>Finish Editing</now-button>
+								</div>
+							) : (
+								<div>
+									<h1>
+										{state.selectedMasterIssue.name}
+										<now-button id="edit" on-click={() => updateState({ editMI: !state.editMI, name: state.selectedMasterIssue.name, description: state.selectedMasterIssue.description })}>Edit</now-button>
+									</h1>
+									Master Issue
+									<br/><br/>
+									Date Created: {state.selectedMasterIssue.sys_created_on}
+									<br/><br/>
+									Created By: {state.selectedMasterIssue.sys_created_by}
+									<br/><br/>
+									Description: {state.selectedMasterIssue.description}
+								</div>
+							) }
 						</now-modal>
 					) : null}
 				</ul>
@@ -465,7 +545,9 @@ createCustomElement('x-524039-ai-risk-modules', {
 				createNewFR: false,
 				createNewBU: false,
 				createNewMI: false,
-				editFR: false
+				editFR: false,
+				editBU: false,
+				editMI: false
 			});
 		},
 
@@ -544,7 +626,9 @@ createCustomElement('x-524039-ai-risk-modules', {
 			}
 		),
 		'EDIT_FOUNDATIONAL_RISK_METHOD': editFoundationalRiskEffect,
-		'EDIT_FOUNDATIONAL_RISK': createHttpEffect("/api/now/table/:table/:sys_id",
+		'EDIT_BUSINESS_UNIT_METHOD': editBusinessUnitEffect,
+		'EDIT_MASTER_ISSUE_METHOD': editMasterIssueEffect,
+		'EDIT': createHttpEffect("/api/now/table/:table/:sys_id",
 			{
 				pathParams: ["table", "sys_id"],
 				method: 'PUT',

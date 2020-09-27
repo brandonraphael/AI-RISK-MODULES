@@ -18,14 +18,29 @@ const fetchTablesEffect = ({ properties, dispatch }) => {
 	dispatch("GET_BUSINESS_UNITS", {
 		table: businessUnitTable
 	});
-	dispatch("GET_MASTER_ISSUES", {
-		table: masterIssueTable,
-	});
 };
 
 const createNewFoundationalRiskEffect = ({ state, dispatch }) => {
 	let name = state.name ? state.name : "";
 	let description = state.description ? state.description : "";
+
+	let descriptions = state.risk_level_5_description ? state.risk_level_5_description : "";
+	descriptions = state.risk_level_4_description ? descriptions + "," + state.risk_level_4_description : descriptions;
+	descriptions = state.risk_level_3_description ? descriptions + "," + state.risk_level_3_description : descriptions;
+	descriptions = state.risk_level_2_description ? descriptions + "," + state.risk_level_2_description : descriptions;
+	descriptions = state.risk_level_1_description ? descriptions + "," + state.risk_level_1_description : descriptions;
+
+	let mins = state.risk_level_5_min ? state.risk_level_5_min : "";
+	mins = state.risk_level_4_min ? mins + "," + state.risk_level_4_min : mins;
+	mins = state.risk_level_3_min ? mins + "," + state.risk_level_3_min : mins;
+	mins = state.risk_level_2_min ? mins + "," + state.risk_level_2_min : mins;
+	mins = state.risk_level_1_min ? mins + "," + state.risk_level_1_min : mins;
+
+	let max = state.risk_level_5_max ? state.risk_level_5_max : "";
+	max = state.risk_level_4_max ? max + "," + state.risk_level_4_max : max;
+	max = state.risk_level_3_max ? max + "," + state.risk_level_3_max : max;
+	max = state.risk_level_2_max ? max + "," + state.risk_level_2_max : max;
+	max = state.risk_level_1_max ? max + "," + state.risk_level_1_max : max;
 
 	dispatch("CREATE",
 		{
@@ -33,7 +48,10 @@ const createNewFoundationalRiskEffect = ({ state, dispatch }) => {
 			requestData:
 				{
 					name: name,
-					description: description
+					description: description,
+					risk_level_descriptions: descriptions,
+					risk_level_mins: mins,
+					risk_level_max: max
 				}
 		}
 	);
@@ -45,6 +63,25 @@ const editFoundationalRiskEffect = ({ state, dispatch }) => {
 	let name = state.name ? state.name : "";
 	let description = state.description ? state.description : "";
 
+	let descriptions = state.risk_level_5_description ? state.risk_level_5_description : (state.selectedFoundationalRisk.risk_level_descriptions.split(",")[0] ? state.selectedFoundationalRisk.risk_level_descriptions.split(",")[0] : "");
+	descriptions = state.risk_level_4_description ? descriptions + "," + state.risk_level_4_description : (state.selectedFoundationalRisk.risk_level_descriptions.split(",")[1] ? (descriptions + "," + state.selectedFoundationalRisk.risk_level_descriptions.split(",")[1]) : descriptions + "," + "");
+	descriptions = state.risk_level_3_description ? descriptions + "," + state.risk_level_3_description : (state.selectedFoundationalRisk.risk_level_descriptions.split(",")[2] ? (descriptions + "," + state.selectedFoundationalRisk.risk_level_descriptions.split(",")[2]) : descriptions + "," + "");
+	descriptions = state.risk_level_2_description ? descriptions + "," + state.risk_level_2_description : (state.selectedFoundationalRisk.risk_level_descriptions.split(",")[3] ? (descriptions + "," + state.selectedFoundationalRisk.risk_level_descriptions.split(",")[3]) : descriptions + "," + "");
+	descriptions = state.risk_level_1_description ? descriptions + "," + state.risk_level_1_description : (state.selectedFoundationalRisk.risk_level_descriptions.split(",")[4] ? (descriptions + "," + state.selectedFoundationalRisk.risk_level_descriptions.split(",")[4]) : descriptions + "," + "");
+
+	let mins = state.risk_level_5_min ? state.risk_level_5_min : (state.selectedFoundationalRisk.risk_level_mins.split(",")[0] ? state.selectedFoundationalRisk.risk_level_mins.split(",")[0] : "");
+	mins = state.risk_level_4_min ? mins + "," + state.risk_level_4_min : (state.selectedFoundationalRisk.risk_level_mins.split(",")[1] ? (mins + "," + state.selectedFoundationalRisk.risk_level_mins.split(",")[1]) : mins + "," + "");
+	mins = state.risk_level_3_min ? mins + "," + state.risk_level_3_min : (state.selectedFoundationalRisk.risk_level_mins.split(",")[2] ? (mins + "," + state.selectedFoundationalRisk.risk_level_mins.split(",")[2]) : mins + "," + "");
+	mins = state.risk_level_2_min ? mins + "," + state.risk_level_2_min : (state.selectedFoundationalRisk.risk_level_mins.split(",")[3] ? (mins + "," + state.selectedFoundationalRisk.risk_level_mins.split(",")[3]) : mins + "," + "");
+	mins = state.risk_level_1_min ? mins + "," + state.risk_level_1_min : (state.selectedFoundationalRisk.risk_level_mins.split(",")[4] ? (mins + "," + state.selectedFoundationalRisk.risk_level_mins.split(",")[4]) : mins + "," + "");
+
+	let max = state.risk_level_5_max ? state.risk_level_5_max : (state.selectedFoundationalRisk.risk_level_max.split(",")[0] ? state.selectedFoundationalRisk.risk_level_max.split(",")[0] : "");
+	max = state.risk_level_4_max ? max + "," + state.risk_level_4_max : (state.selectedFoundationalRisk.risk_level_max.split(",")[1] ? (max + "," + state.selectedFoundationalRisk.risk_level_max.split(",")[1]) : max + "," + "");
+	max = state.risk_level_3_max ? max + "," + state.risk_level_3_max : (state.selectedFoundationalRisk.risk_level_max.split(",")[2] ? (max + "," + state.selectedFoundationalRisk.risk_level_max.split(",")[2]) : max + "," + "");
+	max = state.risk_level_2_max ? max + "," + state.risk_level_2_max : (state.selectedFoundationalRisk.risk_level_max.split(",")[3] ? (max + "," + state.selectedFoundationalRisk.risk_level_max.split(",")[3]) : max + "," + "");
+	max = state.risk_level_1_max ? max + "," + state.risk_level_1_max : (state.selectedFoundationalRisk.risk_level_max.split(",")[4] ? (max + "," + state.selectedFoundationalRisk.risk_level_max.split(",")[4]) : max + "," + "");
+
+
 	dispatch("EDIT",
 		{
 			table: foundationalRiskTable,
@@ -52,7 +89,10 @@ const editFoundationalRiskEffect = ({ state, dispatch }) => {
 			requestData:
 				{
 					name: name,
-					description: description
+					description: description,
+					risk_level_descriptions: descriptions,
+					risk_level_mins: mins,
+					risk_level_max: max
 				}
 		}
 	);
@@ -84,6 +124,19 @@ const editBusinessUnitEffect = ({ state, dispatch }) => {
 	let name = state.name ? state.name : "";
 	let description = state.description ? state.description : "";
 	let goal = state.goal ? state.goal : "";
+	console.log(state)
+	console.log(state.ai_master_issues)
+	console.log( state.selectedBusinessUnit.ai_master_issues);
+	let ai_master_issues = "";
+	{state.ai_master_issues.length ? (
+		state.ai_master_issues.map((result) => (
+			result === null ? null : ai_master_issues.length === 0 ? ai_master_issues = result : ai_master_issues = ai_master_issues + "," + result
+		))
+	) : (
+		ai_master_issues = null
+	)}
+
+	ai_master_issues ? ai_master_issues = ai_master_issues : ai_master_issues = state.selectedBusinessUnit.ai_master_issues;
 
 	dispatch("EDIT",
 		{
@@ -93,7 +146,8 @@ const editBusinessUnitEffect = ({ state, dispatch }) => {
 				{
 					name: name,
 					goal: goal,
-					description: description
+					description: description,
+					ai_master_issues: ai_master_issues
 				}
 		}
 	);
@@ -109,48 +163,6 @@ const getBusinessUnitEffect = ({ state, dispatch }) => {
 		}
 	);
 }
-
-const createNewMasterIssueEffect = ({ state, dispatch }) => {
-	let name = state.name ? state.name : "";
-	let priority = state.priority ? state.priority : "P1";
-	let description = state.description ? state.description : "";
-
-	dispatch("CREATE",
-		{
-			table: masterIssueTable,
-			requestData:
-				{
-					name: name,
-					priority: priority,
-					description: description
-				}
-		}
-	);
-
-	dispatch("MODAL_CLOSED");
-};
-
-const editMasterIssueEffect = ({ state, dispatch }) => {
-	let name = state.name ? state.name : "";
-	let priority = state.priority ? state.priority : "P1";
-	let description = state.description ? state.description : "";
-
-	dispatch("EDIT",
-		{
-			table: masterIssueTable,
-			sys_id: state.selectedMasterIssue.sys_id,
-			requestData:
-				{
-					name: name,
-					priority: priority,
-					description: description
-				}
-		}
-	);
-
-	dispatch("MODAL_CLOSED");
-}
-
 
 const view = (state, { dispatch, updateState }) => {
 	let foundationalRisks;
@@ -223,45 +235,45 @@ const view = (state, { dispatch, updateState }) => {
 									Description
 								</u>
 								<br/>
-								<textarea></textarea>
+								<textarea onchange={(e) => updateState({ risk_level_5_description: e.target.value })}></textarea>
 								<br/>
-								<textarea></textarea>
+								<textarea onchange={(e) => updateState({ risk_level_4_description: e.target.value })}></textarea>
 								<br/>
-								<textarea></textarea>
+								<textarea onchange={(e) => updateState({ risk_level_3_description: e.target.value })}></textarea>
 								<br/>
-								<textarea></textarea>
+								<textarea onchange={(e) => updateState({ risk_level_2_description: e.target.value })}></textarea>
 								<br/>
-								<textarea></textarea>
+								<textarea onchange={(e) => updateState({ risk_level_1_description: e.target.value })}></textarea>
 							</span>
 							<span id="column">
 								<u>
 									Min
 								</u>
 								<br/>
-								<input></input>
+								<input onchange={(e) => updateState({ risk_level_5_min: e.target.value })}></input>
 								<br/>
-								<input></input>
+								<input onchange={(e) => updateState({ risk_level_4_min: e.target.value })}></input>
 								<br/>
-								<input></input>
+								<input onchange={(e) => updateState({ risk_level_3_min: e.target.value })}></input>
 								<br/>
-								<input></input>
+								<input onchange={(e) => updateState({ risk_level_2_min: e.target.value })}></input>
 								<br/>
-								<input></input>
+								<input onchange={(e) => updateState({ risk_level_1_min: e.target.value })}></input>
 							</span>
 							<span id="column">
 								<u>
 									Max
 								</u>
 								<br/>
-								<input></input>
+								<input onchange={(e) => updateState({ risk_level_5_max: e.target.value })}></input>
 								<br/>
-								<input></input>
+								<input onchange={(e) => updateState({ risk_level_4_max: e.target.value })}></input>
 								<br/>
-								<input></input>
+								<input onchange={(e) => updateState({ risk_level_3_max: e.target.value })}></input>
 								<br/>
-								<input></input>
+								<input onchange={(e) => updateState({ risk_level_2_max: e.target.value })}></input>
 								<br/>
-								<input></input>
+								<input onchange={(e) => updateState({ risk_level_1_max: e.target.value })}></input>
 							</span>
 						</now-modal>
 					) : null}
@@ -294,7 +306,70 @@ const view = (state, { dispatch, updateState }) => {
 									<br/><br/>
 									Description: <textarea value={state.selectedFoundationalRisk.description} onchange={(e) => updateState({ description: e.target.value })}></textarea>
 									<br/><br/>
-									<now-button on-click={() => dispatch("EDIT_FOUNDATIONAL_RISK_METHOD")}>Finish Editing</now-button>
+									<span id="column">
+										<u>
+											Risk Level
+										</u>
+										<br/>
+										5
+										<br/>
+										4
+										<br/>
+										3
+										<br/>
+										2
+										<br/>
+										1
+									</span>
+									<span id="column">
+										<u>
+											Description
+										</u>
+										<br/>
+										<textarea value={state.selectedFoundationalRisk.risk_level_descriptions.split(",")[0]} onchange={(e) => updateState({ risk_level_5_description: e.target.value })}></textarea>
+										<br/>
+										<textarea value={state.selectedFoundationalRisk.risk_level_descriptions.split(",")[1]} onchange={(e) => updateState({ risk_level_4_description: e.target.value })}></textarea>
+										<br/>
+										<textarea value={state.selectedFoundationalRisk.risk_level_descriptions.split(",")[2]} onchange={(e) => updateState({ risk_level_3_description: e.target.value })}></textarea>
+										<br/>
+										<textarea value={state.selectedFoundationalRisk.risk_level_descriptions.split(",")[3]} onchange={(e) => updateState({ risk_level_2_description: e.target.value })}></textarea>
+										<br/>
+										<textarea value={state.selectedFoundationalRisk.risk_level_descriptions.split(",")[4]} onchange={(e) => updateState({ risk_level_1_description: e.target.value })}></textarea>
+									</span>
+									<span id="column">
+										<u>
+											Min
+										</u>
+										<br/>
+										<input value={state.selectedFoundationalRisk.risk_level_mins.split(",")[0]} onchange={(e) => updateState({ risk_level_5_min: e.target.value })}></input>
+										<br/>
+										<input value={state.selectedFoundationalRisk.risk_level_mins.split(",")[1]} onchange={(e) => updateState({ risk_level_4_min: e.target.value })}></input>
+										<br/>
+										<input value={state.selectedFoundationalRisk.risk_level_mins.split(",")[2]} onchange={(e) => updateState({ risk_level_3_min: e.target.value })}></input>
+										<br/>
+										<input value={state.selectedFoundationalRisk.risk_level_mins.split(",")[3]} onchange={(e) => updateState({ risk_level_2_min: e.target.value })}></input>
+										<br/>
+										<input value={state.selectedFoundationalRisk.risk_level_mins.split(",")[4]} onchange={(e) => updateState({ risk_level_1_min: e.target.value })}></input>
+									</span>
+									<span id="column">
+										<u>
+											Max
+										</u>
+										<br/>
+										<input value={state.selectedFoundationalRisk.risk_level_max.split(",")[0]} onchange={(e) => updateState({ risk_level_5_max: e.target.value })}></input>
+										<br/>
+										<input value={state.selectedFoundationalRisk.risk_level_max.split(",")[1]} onchange={(e) => updateState({ risk_level_4_max: e.target.value })}></input>
+										<br/>
+										<input value={state.selectedFoundationalRisk.risk_level_max.split(",")[2]} onchange={(e) => updateState({ risk_level_3_max: e.target.value })}></input>
+										<br/>
+										<input value={state.selectedFoundationalRisk.risk_level_max.split(",")[3]} onchange={(e) => updateState({ risk_level_2_max: e.target.value })}></input>
+										<br/>
+										<input value={state.selectedFoundationalRisk.risk_level_max.split(",")[4]} onchange={(e) => updateState({ risk_level_1_max: e.target.value })}></input>
+									</span>
+									<br/><br/>
+									<div>
+										<now-button on-click={() => dispatch("EDIT_FOUNDATIONAL_RISK_METHOD")}>Finish Editing</now-button>
+									</div>
 								</div>
 								) : (
 								<div>
@@ -309,6 +384,67 @@ const view = (state, { dispatch, updateState }) => {
 									Created By: {state.selectedFoundationalRisk.sys_created_by}
 									<br/><br/>
 									Description: {state.selectedFoundationalRisk.description}
+									<br/><br/>
+									<span id="column">
+										<u>
+											Risk Level
+										</u>
+										<br/>
+										5
+										<br/>
+										4
+										<br/>
+										3
+										<br/>
+										2
+										<br/>
+										1
+									</span>
+									<span id="column">
+										<u>
+											Description
+										</u>
+										<br/>
+										{state.selectedFoundationalRisk.risk_level_descriptions.split(",")[0]}
+										<br/>
+										{state.selectedFoundationalRisk.risk_level_descriptions.split(",")[1]}
+										<br/>
+										{state.selectedFoundationalRisk.risk_level_descriptions.split(",")[2]}
+										<br/>
+										{state.selectedFoundationalRisk.risk_level_descriptions.split(",")[3]}
+										<br/>
+										{state.selectedFoundationalRisk.risk_level_descriptions.split(",")[4]}
+									</span>
+									<span id="column">
+										<u>
+											Min
+										</u>
+										<br/>
+										{state.selectedFoundationalRisk.risk_level_mins.split(",")[0]}
+										<br/>
+										{state.selectedFoundationalRisk.risk_level_mins.split(",")[1]}
+										<br/>
+										{state.selectedFoundationalRisk.risk_level_mins.split(",")[2]}
+										<br/>
+										{state.selectedFoundationalRisk.risk_level_mins.split(",")[3]}
+										<br/>
+										{state.selectedFoundationalRisk.risk_level_mins.split(",")[4]}
+									</span>
+									<span id="column">
+										<u>
+											Max
+										</u>
+										<br/>
+										{state.selectedFoundationalRisk.risk_level_max.split(",")[0]}
+										<br/>
+										{state.selectedFoundationalRisk.risk_level_max.split(",")[1]}
+										<br/>
+										{state.selectedFoundationalRisk.risk_level_max.split(",")[2]}
+										<br/>
+										{state.selectedFoundationalRisk.risk_level_max.split(",")[3]}
+										<br/>
+										{state.selectedFoundationalRisk.risk_level_max.split(",")[4]}
+									</span>
 								</div>
 							) }
 						</now-modal>
@@ -403,6 +539,45 @@ const view = (state, { dispatch, updateState }) => {
 									<br/><br/>
 									Description: <textarea value={state.selectedBusinessUnit.description} onchange={(e) => updateState({ description: e.target.value })}></textarea>
 									<br/><br/>
+									Linked Master Issues(s):
+									<ul>
+										{state.selectedBusinessUnit.ai_master_issues.length ? (
+											state.selectedBusinessUnit.ai_master_issues.split(',').map((result) => (
+												<li>
+													{result}<now-button on-click={() => updateState({ ai_master_issues: state.selectedBusinessUnit.ai_master_issues.split(',').map((i) => (i === result ? null : i))})}>Remove</now-button>
+												</li>
+											))
+										) : (
+											<p>NONE</p>
+										)}
+									</ul>
+									<br/><br/>
+									Linked Project(s):
+									<ul>
+										{state.selectedBusinessUnit.projects.length ? (
+											state.selectedBusinessUnit.projects.split(',').map((result) => (
+												<li>
+													{result}
+												</li>
+											))
+										) : (
+											<p>NONE</p>
+										)}
+									</ul>
+									<br/><br/>
+									Linked Control(s):
+									<ul>
+										{state.selectedBusinessUnit.controls.length ? (
+											state.selectedBusinessUnit.controls.split(',').map((result) => (
+												<li>
+													{result}
+												</li>
+											))
+										) : (
+											<p>NONE</p>
+										)}
+									</ul>
+									<br/><br/>
 									<now-button on-click={() => dispatch("EDIT_BUSINESS_UNIT_METHOD")}>Finish Editing</now-button>
 								</div>
 							) : (
@@ -420,117 +595,11 @@ const view = (state, { dispatch, updateState }) => {
 									Goal: {state.selectedBusinessUnit.goal}
 									<br/><br/>
 									Description: {state.selectedBusinessUnit.description}
-								</div>
-							) }
-						</now-modal>
-					) : null}
-				</ul>
-			</div>
-	}
-
-	let masterIssues;
-	if (state.showMasterIssuesLoading) {
-		masterIssues = <div></div>
-	} else {
-		console.log(state)
-
-		masterIssues =
-			<div>
-				<h2 id="title">
-					<u>
-						Master Issues
-					</u>
-				</h2>
-				<ul id="list">
-					{state.masterIssues.length ? (
-						state.masterIssues.map((result) => (
-							<li id="list_item">
-								{result.name}
-								<now-button id="view" on-click={() => updateState({ selectedMasterIssue: result })}>View</now-button>
-							</li>
-						))
-					) : (
-						<li>No Master Issues Found</li>
-					)}
-					<now-button id="create_new" on-click={() => updateState({ createNewMI: true })}>Create New MI</now-button>
-					{state.createNewMI ? (
-						<now-modal
-							opened={state.createNewMI}
-							size="lg"
-							footerActions={[
-								{
-									label: "Cancel",
-									variant: "secondary",
-									clickActionType: "NOW_MODAL#OPENED_SET",
-								},
-								{
-									label: "Create",
-									variant: "primary",
-									clickActionType: "CREATE_NEW_MASTER_ISSUE_METHOD",
-								},
-							]}
-						>
-							<h1>
-								Create New Master Issue
-							</h1>
-							Master Issue Name:
-							<input onchange={(e) => updateState({ name: e.target.value })}></input>
-							<br/><br/>
-							<p>
-								Note: Master issues will be automatically assigned to any new projects created in the business unit.
-							</p>
-							<br/><br/>
-							Priority:
-							<now-dropdown items={[
-								{"id":"P1","label":"Very High (P1)", "value":"P1"},
-								{"id":"P2","label":"High (P2)", "value":"P2"},
-								{"id":"P3","label":"Medium (P3)", "value":"P3"},
-								{"id":"P4","label":"Low (P4)", "value":"P4"},
-								{"id":"P5","label":"Non-Urgent (P5)", "value":"P5"}]} selectedItems={["P1"]} icon="" placeholder="" tooltipContent="" size="md" variant="secondary" select="single" panelFitProps={{}} configAria={{}}></now-dropdown>
-							<br/><br/>
-							Description:
-							<br/><br/>
-							<textarea onchange={(e) => updateState({ description: e.target.value })}></textarea>
-						</now-modal>
-					) : null}
-					{state.selectedMasterIssue ? (
-						<now-modal
-							opened={state.selectedMasterIssue}
-							size="lg"
-							footerActions={[
-								{
-									label: "Done",
-									variant: "secondary",
-									clickActionType: "NOW_MODAL#OPENED_SET",
-								},
-							]}
-						>
-							{state.editMI ? (
-								<div>
-									<h1>
-										Editing: {state.selectedMasterIssue.name}
-										<now-button id="edit" on-click={() => updateState({ editMI: !state.editMI })}>{state.editMI ? "Cancel" : "Edit"}</now-button>
-									</h1>
-									Master Issue
 									<br/><br/>
-									Name: <input value={state.selectedMasterIssue.name} onchange={(e) => updateState({ name: e.target.value })}></input>
-									<br/><br/>
-									Priority:
-									<now-dropdown items={[
-										{"id":"P1","label":"Very High (P1)", "value":"P1"},
-										{"id":"P2","label":"High (P2)", "value":"P2"},
-										{"id":"P3","label":"Medium (P3)", "value":"P3"},
-										{"id":"P4","label":"Low (P4)", "value":"P4"},
-										{"id":"P5","label":"Non-Urgent (P5)", "value":"P5"}]} selectedItems={["P1"]} icon="" placeholder="" tooltipContent="" size="md" variant="secondary" select="single" panelFitProps={{}} configAria={{}}></now-dropdown>
-									<br/><br/>
-									Date Created: {state.selectedMasterIssue.sys_created_on}
-									<br/><br/>
-									Created By: {state.selectedMasterIssue.sys_created_by}
-									<br/><br/>
-									Business Unit(s):
+									Linked Master Issues(s):
 									<ul>
-										{state.selectedMasterIssue.business_units.length ? (
-											state.selectedMasterIssue.business_units.split(',').map((result) => (
+										{state.selectedBusinessUnit.ai_master_issues.length ? (
+											state.selectedBusinessUnit.ai_master_issues.split(',').map((result) => (
 												<li>
 													{result}
 												</li>
@@ -540,30 +609,10 @@ const view = (state, { dispatch, updateState }) => {
 										)}
 									</ul>
 									<br/><br/>
-									Description: <textarea value={state.selectedMasterIssue.description} onchange={(e) => updateState({ description: e.target.value })}></textarea>
-									<br/><br/>
-									Workflow: {state.selectedMasterIssue.workflow}
-									<br/><br/>
-									<now-button on-click={() => dispatch("EDIT_MASTER_ISSUE_METHOD")}>Finish Editing</now-button>
-								</div>
-							) : (
-								<div>
-									<h1>
-										{state.selectedMasterIssue.name}
-										<now-button id="edit" on-click={() => updateState({ editMI: !state.editMI, name: state.selectedMasterIssue.name, description: state.selectedMasterIssue.description })}>Edit</now-button>
-									</h1>
-									Master Issue
-									<br/><br/>
-									Priority: {state.selectedMasterIssue.priority}
-									<br/><br/>
-									Date Created: {state.selectedMasterIssue.sys_created_on}
-									<br/><br/>
-									Created By: {state.selectedMasterIssue.sys_created_by}
-									<br/><br/>
-									Business Unit(s):
+									Linked Project(s):
 									<ul>
-										{state.selectedMasterIssue.business_units.length ? (
-											state.selectedMasterIssue.business_units.split(',').map((result) => (
+										{state.selectedBusinessUnit.projects.length ? (
+											state.selectedBusinessUnit.projects.split(',').map((result) => (
 												<li>
 													{result}
 												</li>
@@ -573,9 +622,18 @@ const view = (state, { dispatch, updateState }) => {
 										)}
 									</ul>
 									<br/><br/>
-									Description: {state.selectedMasterIssue.description}
-									<br/><br/>
-									Workflow: {state.selectedMasterIssue.workflow}
+									Linked Control(s):
+									<ul>
+										{state.selectedBusinessUnit.controls.length ? (
+											state.selectedBusinessUnit.controls.split(',').map((result) => (
+												<li>
+													{result}
+												</li>
+											))
+										) : (
+											<p>NONE</p>
+										)}
+									</ul>
 								</div>
 							) }
 						</now-modal>
@@ -596,8 +654,6 @@ const view = (state, { dispatch, updateState }) => {
 				{businessUnits}
 				<br/>
 				{foundationalRisks}
-				<br/>
-				{masterIssues}
 			</div>
 		</div>
 	);
@@ -624,13 +680,33 @@ createCustomElement('x-524039-ai-risk-modules', {
 			updateState({
 				selectedBusinessUnit: null,
 				selectedFoundationalRisk: null,
-				selectedMasterIssue: null,
 				createNewFR: false,
 				createNewBU: false,
-				createNewMI: false,
 				editFR: false,
 				editBU: false,
-				editMI: false
+
+				risk_level_5_description: null,
+				risk_level_4_description: null,
+				risk_level_3_description: null,
+				risk_level_2_description: null,
+				risk_level_1_description: null,
+
+				risk_level_5_min: null,
+				risk_level_4_min: null,
+				risk_level_3_min: null,
+				risk_level_2_min: null,
+				risk_level_1_min: null,
+
+				risk_level_5_max: null,
+				risk_level_4_max: null,
+				risk_level_3_max: null,
+				risk_level_2_max: null,
+				risk_level_1_max: null,
+
+				name: null,
+				description: null,
+
+				goal: null,
 			});
 		},
 
@@ -650,19 +726,6 @@ createCustomElement('x-524039-ai-risk-modules', {
 		},
 		'CREATE_NEW_BUSINESS_UNIT_METHOD': createNewBusinessUnitEffect,
 
-		// master issue handlers
-		GET_MASTER_ISSUES: createHttpEffect("/api/now/table/:table", {
-			pathParams: ["table"],
-			startActionType: "GET_MASTER_ISSUES_STARTED",
-			successActionType: "GET_MASTER_ISSUES_FETCHED",
-		}),
-		GET_MASTER_ISSUES_STARTED: ({ updateState }) =>
-			updateState({ showMasterIssuesLoading: true, editMI: false  }),
-		GET_MASTER_ISSUES_FETCHED: ({ action, updateState }) => {
-			updateState({ masterIssues: action.payload.result, showMasterIssuesLoading: false });
-		},
-		'CREATE_NEW_MASTER_ISSUE_METHOD': createNewMasterIssueEffect,
-
 		// foundational risk handlers
 		GET_FOUNDATIONAL_RISKS: createHttpEffect("/api/now/table/:table", {
 			pathParams: ["table"],
@@ -680,7 +743,6 @@ createCustomElement('x-524039-ai-risk-modules', {
 		'CREATE_NEW_FOUNDATIONAL_RISK_METHOD': createNewFoundationalRiskEffect,
 		'EDIT_FOUNDATIONAL_RISK_METHOD': editFoundationalRiskEffect,
 		'EDIT_BUSINESS_UNIT_METHOD': editBusinessUnitEffect,
-		'EDIT_MASTER_ISSUE_METHOD': editMasterIssueEffect,
 		'GET_BUSINESS_UNIT': getBusinessUnitEffect,
 		'CREATE': createHttpEffect("/api/now/table/:table",
 			{

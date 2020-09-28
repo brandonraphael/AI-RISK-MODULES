@@ -7,14 +7,14 @@ import "@servicenow/now-button";
 import "@servicenow/now-loader";
 import "@servicenow/now-dropdown";
 
-const foundationalRiskTable = "x_524039_pericrora_ai_foundational_risk";
+const riskLeverTable = "x_524039_pericrora_ai_risk_lever";
 const businessUnitTable = "x_524039_pericrora_ai_business_unit";
 const controlTable = "x_524039_pericrora_ai_risk_control";
 const projectTable = "x_524039_pericrora_risk_project_ticket";
 
 const fetchTablesEffect = ({ properties, dispatch }) => {
-	dispatch("GET_FOUNDATIONAL_RISKS", {
-		table: foundationalRiskTable,
+	dispatch("GET_RISK_LEVERS", {
+		table: riskLeverTable,
 	});
 	dispatch("GET_BUSINESS_UNITS", {
 		table: businessUnitTable
@@ -39,38 +39,53 @@ const getControlEffect = ({ dispatch }) => {
 	});
 }
 
-const createNewFoundationalRiskEffect = ({ state, dispatch }) => {
+const createNewRiskLeverEffect = ({ state, dispatch }) => {
 	let name = state.name ? state.name : "";
 	let description = state.description ? state.description : "";
 
-	let descriptions = state.risk_level_5_description ? state.risk_level_5_description : "";
-	descriptions = state.risk_level_4_description ? descriptions + "," + state.risk_level_4_description : descriptions;
-	descriptions = state.risk_level_3_description ? descriptions + "," + state.risk_level_3_description : descriptions;
-	descriptions = state.risk_level_2_description ? descriptions + "," + state.risk_level_2_description : descriptions;
-	descriptions = state.risk_level_1_description ? descriptions + "," + state.risk_level_1_description : descriptions;
+	let description_5 = state.risk_level_5_description ? state.risk_level_5_description : "";
+	let description_4 = state.risk_level_4_description ? state.risk_level_4_description : "";
+	let description_3 = state.risk_level_3_description ? state.risk_level_3_description : "";
+	let description_2 = state.risk_level_2_description ? state.risk_level_2_description : "";
+	let description_1 = state.risk_level_1_description ? state.risk_level_1_description : "";
 
-	let mins = state.risk_level_5_min ? state.risk_level_5_min : "";
-	mins = state.risk_level_4_min ? mins + "," + state.risk_level_4_min : mins;
-	mins = state.risk_level_3_min ? mins + "," + state.risk_level_3_min : mins;
-	mins = state.risk_level_2_min ? mins + "," + state.risk_level_2_min : mins;
-	mins = state.risk_level_1_min ? mins + "," + state.risk_level_1_min : mins;
+	let min_5 = state.risk_level_5_min ? state.risk_level_5_min : "";
+	let min_4 = state.risk_level_4_min ? state.risk_level_4_min : "";
+	let min_3 = state.risk_level_3_min ? state.risk_level_3_min : "";
+	let min_2 = state.risk_level_2_min ? state.risk_level_2_min : "";
+	let min_1 = state.risk_level_1_min ? state.risk_level_1_min : "";
 
-	let max = state.risk_level_5_max ? state.risk_level_5_max : "";
-	max = state.risk_level_4_max ? max + "," + state.risk_level_4_max : max;
-	max = state.risk_level_3_max ? max + "," + state.risk_level_3_max : max;
-	max = state.risk_level_2_max ? max + "," + state.risk_level_2_max : max;
-	max = state.risk_level_1_max ? max + "," + state.risk_level_1_max : max;
+	let max_5 = state.risk_level_5_max ? state.risk_level_5_max : "";
+	let max_4 = state.risk_level_4_max ? state.risk_level_4_max : "";
+	let max_3 = state.risk_level_3_max ? state.risk_level_3_max : "";
+	let max_2 = state.risk_level_2_max ? state.risk_level_2_max : "";
+	let max_1 = state.risk_level_1_max ? state.risk_level_1_max : "";
 
 	dispatch("CREATE",
 		{
-			table: foundationalRiskTable,
+			table: riskLeverTable,
 			requestData:
 				{
 					name: name,
 					description: description,
-					risk_level_descriptions: descriptions,
-					risk_level_mins: mins,
-					risk_level_max: max
+
+					min_exp_loss_5: min_5,
+					min_exp_loss_4: min_4,
+					min_exp_loss_3: min_3,
+					min_exp_loss_2: min_2,
+					min_exp_loss_1: min_1,
+
+					max_exp_loss_5: max_5,
+					max_exp_loss_4: max_4,
+					max_exp_loss_3: max_3,
+					max_exp_loss_2: max_2,
+					max_exp_loss_1: max_1,
+
+					risk_5_desc: description_5,
+					risk_4_desc: description_4,
+					risk_3_desc: description_3,
+					risk_2_desc: description_2,
+					risk_1_desc: description_1
 				}
 		}
 	);
@@ -78,40 +93,54 @@ const createNewFoundationalRiskEffect = ({ state, dispatch }) => {
 	dispatch("MODAL_CLOSED");
 };
 
-const editFoundationalRiskEffect = ({ state, dispatch }) => {
+const editRiskLeverEffect = ({ state, dispatch }) => {
 	let name = state.name ? state.name : "";
 	let description = state.description ? state.description : "";
 
-	let descriptions = state.risk_level_5_description ? state.risk_level_5_description : (state.selectedFoundationalRisk.risk_level_descriptions.split(",")[0] ? state.selectedFoundationalRisk.risk_level_descriptions.split(",")[0] : "");
-	descriptions = state.risk_level_4_description ? descriptions + "," + state.risk_level_4_description : (state.selectedFoundationalRisk.risk_level_descriptions.split(",")[1] ? (descriptions + "," + state.selectedFoundationalRisk.risk_level_descriptions.split(",")[1]) : descriptions + "," + "");
-	descriptions = state.risk_level_3_description ? descriptions + "," + state.risk_level_3_description : (state.selectedFoundationalRisk.risk_level_descriptions.split(",")[2] ? (descriptions + "," + state.selectedFoundationalRisk.risk_level_descriptions.split(",")[2]) : descriptions + "," + "");
-	descriptions = state.risk_level_2_description ? descriptions + "," + state.risk_level_2_description : (state.selectedFoundationalRisk.risk_level_descriptions.split(",")[3] ? (descriptions + "," + state.selectedFoundationalRisk.risk_level_descriptions.split(",")[3]) : descriptions + "," + "");
-	descriptions = state.risk_level_1_description ? descriptions + "," + state.risk_level_1_description : (state.selectedFoundationalRisk.risk_level_descriptions.split(",")[4] ? (descriptions + "," + state.selectedFoundationalRisk.risk_level_descriptions.split(",")[4]) : descriptions + "," + "");
+	let description_5 = state.risk_level_5_description ? state.risk_level_5_description : (state.selectedRiskLever.risk_5_desc ? state.selectedRiskLever.risk_5_desc : "");
+	let description_4 = state.risk_level_4_description ? state.risk_level_4_description : (state.selectedRiskLever.risk_4_desc ? state.selectedRiskLever.risk_4_desc : "");
+	let description_3 = state.risk_level_3_description ? state.risk_level_3_description : (state.selectedRiskLever.risk_3_desc ? state.selectedRiskLever.risk_3_desc : "");
+	let description_2 = state.risk_level_2_description ? state.risk_level_2_description : (state.selectedRiskLever.risk_2_desc ? state.selectedRiskLever.risk_2_desc : "");
+	let description_1 = state.risk_level_1_description ? state.risk_level_1_description : (state.selectedRiskLever.risk_1_desc ? state.selectedRiskLever.risk_1_desc : "");
 
-	let mins = state.risk_level_5_min ? state.risk_level_5_min : (state.selectedFoundationalRisk.risk_level_mins.split(",")[0] ? state.selectedFoundationalRisk.risk_level_mins.split(",")[0] : "");
-	mins = state.risk_level_4_min ? mins + "," + state.risk_level_4_min : (state.selectedFoundationalRisk.risk_level_mins.split(",")[1] ? (mins + "," + state.selectedFoundationalRisk.risk_level_mins.split(",")[1]) : mins + "," + "");
-	mins = state.risk_level_3_min ? mins + "," + state.risk_level_3_min : (state.selectedFoundationalRisk.risk_level_mins.split(",")[2] ? (mins + "," + state.selectedFoundationalRisk.risk_level_mins.split(",")[2]) : mins + "," + "");
-	mins = state.risk_level_2_min ? mins + "," + state.risk_level_2_min : (state.selectedFoundationalRisk.risk_level_mins.split(",")[3] ? (mins + "," + state.selectedFoundationalRisk.risk_level_mins.split(",")[3]) : mins + "," + "");
-	mins = state.risk_level_1_min ? mins + "," + state.risk_level_1_min : (state.selectedFoundationalRisk.risk_level_mins.split(",")[4] ? (mins + "," + state.selectedFoundationalRisk.risk_level_mins.split(",")[4]) : mins + "," + "");
+	let min_5 = state.risk_level_5_min ? state.risk_level_5_min : (state.selectedRiskLever.min_exp_loss_5 ? state.selectedRiskLever.min_exp_loss_5 : "");
+	let min_4 = state.risk_level_4_min ? state.risk_level_4_min : (state.selectedRiskLever.min_exp_loss_4 ? state.selectedRiskLever.min_exp_loss_4 : "");
+	let min_3 = state.risk_level_3_min ? state.risk_level_3_min : (state.selectedRiskLever.min_exp_loss_3 ? state.selectedRiskLever.min_exp_loss_3 : "");
+	let min_2 = state.risk_level_2_min ? state.risk_level_2_min : (state.selectedRiskLever.min_exp_loss_2 ? state.selectedRiskLever.min_exp_loss_2 : "");
+	let min_1 = state.risk_level_1_min ? state.risk_level_1_min : (state.selectedRiskLever.min_exp_loss_1 ? state.selectedRiskLever.min_exp_loss_1 : "");
 
-	let max = state.risk_level_5_max ? state.risk_level_5_max : (state.selectedFoundationalRisk.risk_level_max.split(",")[0] ? state.selectedFoundationalRisk.risk_level_max.split(",")[0] : "");
-	max = state.risk_level_4_max ? max + "," + state.risk_level_4_max : (state.selectedFoundationalRisk.risk_level_max.split(",")[1] ? (max + "," + state.selectedFoundationalRisk.risk_level_max.split(",")[1]) : max + "," + "");
-	max = state.risk_level_3_max ? max + "," + state.risk_level_3_max : (state.selectedFoundationalRisk.risk_level_max.split(",")[2] ? (max + "," + state.selectedFoundationalRisk.risk_level_max.split(",")[2]) : max + "," + "");
-	max = state.risk_level_2_max ? max + "," + state.risk_level_2_max : (state.selectedFoundationalRisk.risk_level_max.split(",")[3] ? (max + "," + state.selectedFoundationalRisk.risk_level_max.split(",")[3]) : max + "," + "");
-	max = state.risk_level_1_max ? max + "," + state.risk_level_1_max : (state.selectedFoundationalRisk.risk_level_max.split(",")[4] ? (max + "," + state.selectedFoundationalRisk.risk_level_max.split(",")[4]) : max + "," + "");
-
+	let max_5 = state.risk_level_5_max ? state.risk_level_5_max : (state.selectedRiskLever.max_exp_loss_5 ? state.selectedRiskLever.max_exp_loss_5 : "");
+	let max_4 = state.risk_level_4_max ? state.risk_level_4_max : (state.selectedRiskLever.max_exp_loss_4 ? state.selectedRiskLever.max_exp_loss_4 : "");
+	let max_3 = state.risk_level_3_max ? state.risk_level_3_max : (state.selectedRiskLever.max_exp_loss_3 ? state.selectedRiskLever.max_exp_loss_3 : "");
+	let max_2 = state.risk_level_2_max ? state.risk_level_2_max : (state.selectedRiskLever.max_exp_loss_2 ? state.selectedRiskLever.max_exp_loss_2 : "");
+	let max_1 = state.risk_level_1_max ? state.risk_level_1_max : (state.selectedRiskLever.max_exp_loss_1 ? state.selectedRiskLever.max_exp_loss_1 : "");
 
 	dispatch("EDIT",
 		{
-			table: foundationalRiskTable,
-			sys_id: state.selectedFoundationalRisk.sys_id,
+			table: riskLeverTable,
+			sys_id: state.selectedRiskLever.sys_id,
 			requestData:
 				{
 					name: name,
 					description: description,
-					risk_level_descriptions: descriptions,
-					risk_level_mins: mins,
-					risk_level_max: max
+
+					min_exp_loss_5: min_5,
+					min_exp_loss_4: min_4,
+					min_exp_loss_3: min_3,
+					min_exp_loss_2: min_2,
+					min_exp_loss_1: min_1,
+
+					max_exp_loss_5: max_5,
+					max_exp_loss_4: max_4,
+					max_exp_loss_3: max_3,
+					max_exp_loss_2: max_2,
+					max_exp_loss_1: max_1,
+
+					risk_5_desc: description_5,
+					risk_4_desc: description_4,
+					risk_3_desc: description_3,
+					risk_2_desc: description_2,
+					risk_1_desc: description_1
 				}
 		}
 	);
@@ -170,32 +199,32 @@ const getBusinessUnitEffect = ({ state, dispatch }) => {
 }
 
 const view = (state, { dispatch, updateState }) => {
-	let foundationalRisks;
-	if (state.showFoundationalRisksLoading) {
-		foundationalRisks = <now-loader id="loader"></now-loader>
+	let riskLevers;
+	if (state.showRiskLeversLoading) {
+		riskLevers = <now-loader id="loader"></now-loader>
 	} else {
-		foundationalRisks =
+		riskLevers =
 			<div>
 				<h2 id="title">
 					<u>
-						Foundational Risks
+						Risk Levers
 					</u>
 				</h2>
 				<ul id="list">
-					{state.foundationalRisks.length ? (
-						state.foundationalRisks.map((result) => (
+					{state.riskLevers.length ? (
+						state.riskLevers.map((result) => (
 							<li id="list_item">
 								{result.name}
-								<now-button id="view" on-click={() => updateState({ selectedFoundationalRisk: result })}>View</now-button>
+								<now-button id="view" on-click={() => updateState({ selectedRiskLever: result })}>View</now-button>
 							</li>
 						))
 					) : (
-						<li>No Foundational Risks Found</li>
+						<li>No Risk Levers Found</li>
 					)}
-					<now-button id="create_new" on-click={() => updateState({ createNewFR: true })}>Create New FR</now-button>
-					{state.createNewFR ? (
+					<now-button id="create_new" on-click={() => updateState({ createNewRL: true })}>Create New RL</now-button>
+					{state.createNewRL ? (
 						<now-modal
-							opened={state.createNewFR}
+							opened={state.createNewRL}
 							size="lg"
 							footerActions={[
 								{
@@ -206,12 +235,12 @@ const view = (state, { dispatch, updateState }) => {
 								{
 									label: "Create",
 									variant: "primary",
-									clickActionType: "CREATE_NEW_FOUNDATIONAL_RISK_METHOD",
+									clickActionType: "CREATE_NEW_RISK_LEVER_METHOD",
 								},
 							]}
 						>
 							<h1>
-								Create New Foundational Risk
+								Create New Risk Lever
 							</h1>
 							Risk Name:
 							<input onchange={(e) => updateState({ name: e.target.value })}></input>
@@ -283,9 +312,9 @@ const view = (state, { dispatch, updateState }) => {
 						</now-modal>
 					) : null}
 
-					{state.selectedFoundationalRisk ? (
+					{state.selectedRiskLever ? (
 						<now-modal
-							opened={state.selectedFoundationalRisk}
+							opened={state.selectedRiskLever}
 							size="lg"
 							footerActions={[
 								{
@@ -295,21 +324,21 @@ const view = (state, { dispatch, updateState }) => {
 								},
 							]}
 						>
-							{state.editFR ? (
+							{state.editRL ? (
 								<div>
 									<h1>
-										Editing: {state.selectedFoundationalRisk.name}
-										<now-button id="edit" on-click={() => updateState({ editFR: !state.editFR })}>{state.editFR ? "Cancel" : "Edit"}</now-button>
+										Editing: {state.selectedRiskLever.name}
+										<now-button id="edit" on-click={() => updateState({ editRL: !state.editRL })}>{state.editRL ? "Cancel" : "Edit"}</now-button>
 									</h1>
-									Foundational Risk
+									Risk Lever
 									<br/><br/>
-									Name: <input value={state.selectedFoundationalRisk.name} onchange={(e) => updateState({ name: e.target.value })}></input>
+									Name: <input value={state.selectedRiskLever.name} onchange={(e) => updateState({ name: e.target.value })}></input>
 									<br/><br/>
-									Date Created: {state.selectedFoundationalRisk.sys_created_on}
+									Date Created: {state.selectedRiskLever.sys_created_on}
 									<br/><br/>
-									Created By: {state.selectedFoundationalRisk.sys_created_by}
+									Created By: {state.selectedRiskLever.sys_created_by}
 									<br/><br/>
-									Description: <textarea value={state.selectedFoundationalRisk.description} onchange={(e) => updateState({ description: e.target.value })}></textarea>
+									Description: <textarea value={state.selectedRiskLever.description} onchange={(e) => updateState({ description: e.target.value })}></textarea>
 									<br/><br/>
 									<span id="column">
 										<u>
@@ -331,64 +360,64 @@ const view = (state, { dispatch, updateState }) => {
 											Description
 										</u>
 										<br/>
-										<textarea value={state.selectedFoundationalRisk.risk_level_descriptions.split(",")[0]} onchange={(e) => updateState({ risk_level_5_description: e.target.value })}></textarea>
+										<textarea value={state.selectedRiskLever.risk_5_desc} onchange={(e) => updateState({ risk_level_5_description: e.target.value })}></textarea>
 										<br/>
-										<textarea value={state.selectedFoundationalRisk.risk_level_descriptions.split(",")[1]} onchange={(e) => updateState({ risk_level_4_description: e.target.value })}></textarea>
+										<textarea value={state.selectedRiskLever.risk_4_desc} onchange={(e) => updateState({ risk_level_4_description: e.target.value })}></textarea>
 										<br/>
-										<textarea value={state.selectedFoundationalRisk.risk_level_descriptions.split(",")[2]} onchange={(e) => updateState({ risk_level_3_description: e.target.value })}></textarea>
+										<textarea value={state.selectedRiskLever.risk_3_desc} onchange={(e) => updateState({ risk_level_3_description: e.target.value })}></textarea>
 										<br/>
-										<textarea value={state.selectedFoundationalRisk.risk_level_descriptions.split(",")[3]} onchange={(e) => updateState({ risk_level_2_description: e.target.value })}></textarea>
+										<textarea value={state.selectedRiskLever.risk_2_desc} onchange={(e) => updateState({ risk_level_2_description: e.target.value })}></textarea>
 										<br/>
-										<textarea value={state.selectedFoundationalRisk.risk_level_descriptions.split(",")[4]} onchange={(e) => updateState({ risk_level_1_description: e.target.value })}></textarea>
+										<textarea value={state.selectedRiskLever.risk_1_desc} onchange={(e) => updateState({ risk_level_1_description: e.target.value })}></textarea>
 									</span>
 									<span id="column">
 										<u>
 											Min
 										</u>
 										<br/>
-										<input value={state.selectedFoundationalRisk.risk_level_mins.split(",")[0]} onchange={(e) => updateState({ risk_level_5_min: e.target.value })}></input>
+										<input value={state.selectedRiskLever.min_exp_loss_5} onchange={(e) => updateState({ risk_level_5_min: e.target.value })}></input>
 										<br/>
-										<input value={state.selectedFoundationalRisk.risk_level_mins.split(",")[1]} onchange={(e) => updateState({ risk_level_4_min: e.target.value })}></input>
+										<input value={state.selectedRiskLever.min_exp_loss_4} onchange={(e) => updateState({ risk_level_4_min: e.target.value })}></input>
 										<br/>
-										<input value={state.selectedFoundationalRisk.risk_level_mins.split(",")[2]} onchange={(e) => updateState({ risk_level_3_min: e.target.value })}></input>
+										<input value={state.selectedRiskLever.min_exp_loss_3} onchange={(e) => updateState({ risk_level_3_min: e.target.value })}></input>
 										<br/>
-										<input value={state.selectedFoundationalRisk.risk_level_mins.split(",")[3]} onchange={(e) => updateState({ risk_level_2_min: e.target.value })}></input>
+										<input value={state.selectedRiskLever.min_exp_loss_2} onchange={(e) => updateState({ risk_level_2_min: e.target.value })}></input>
 										<br/>
-										<input value={state.selectedFoundationalRisk.risk_level_mins.split(",")[4]} onchange={(e) => updateState({ risk_level_1_min: e.target.value })}></input>
+										<input value={state.selectedRiskLever.min_exp_loss_1} onchange={(e) => updateState({ risk_level_1_min: e.target.value })}></input>
 									</span>
 									<span id="column">
 										<u>
 											Max
 										</u>
 										<br/>
-										<input value={state.selectedFoundationalRisk.risk_level_max.split(",")[0]} onchange={(e) => updateState({ risk_level_5_max: e.target.value })}></input>
+										<input value={state.selectedRiskLever.max_exp_loss_5} onchange={(e) => updateState({ risk_level_5_max: e.target.value })}></input>
 										<br/>
-										<input value={state.selectedFoundationalRisk.risk_level_max.split(",")[1]} onchange={(e) => updateState({ risk_level_4_max: e.target.value })}></input>
+										<input value={state.selectedRiskLever.max_exp_loss_4} onchange={(e) => updateState({ risk_level_4_max: e.target.value })}></input>
 										<br/>
-										<input value={state.selectedFoundationalRisk.risk_level_max.split(",")[2]} onchange={(e) => updateState({ risk_level_3_max: e.target.value })}></input>
+										<input value={state.selectedRiskLever.max_exp_loss_3} onchange={(e) => updateState({ risk_level_3_max: e.target.value })}></input>
 										<br/>
-										<input value={state.selectedFoundationalRisk.risk_level_max.split(",")[3]} onchange={(e) => updateState({ risk_level_2_max: e.target.value })}></input>
+										<input value={state.selectedRiskLever.max_exp_loss_2} onchange={(e) => updateState({ risk_level_2_max: e.target.value })}></input>
 										<br/>
-										<input value={state.selectedFoundationalRisk.risk_level_max.split(",")[4]} onchange={(e) => updateState({ risk_level_1_max: e.target.value })}></input>
+										<input value={state.selectedRiskLever.max_exp_loss_1} onchange={(e) => updateState({ risk_level_1_max: e.target.value })}></input>
 									</span>
 									<br/><br/>
 									<div>
-										<now-button on-click={() => dispatch("EDIT_FOUNDATIONAL_RISK_METHOD")}>Finish Editing</now-button>
+										<now-button on-click={() => dispatch("EDIT_RISK_LEVER_METHOD")}>Finish Editing</now-button>
 									</div>
 								</div>
 								) : (
 								<div>
 									<h1>
-										{state.selectedFoundationalRisk.name}
-										<now-button id="edit" on-click={() => updateState({ editFR: !state.editFR, name: state.selectedFoundationalRisk.name, description: state.selectedFoundationalRisk.description })}>Edit</now-button>
+										{state.selectedRiskLever.name}
+										<now-button id="edit" on-click={() => updateState({ editRL: !state.editRL, name: state.selectedRiskLever.name, description: state.selectedRiskLever.description })}>Edit</now-button>
 									</h1>
-									Foundational Risk
+									Risk Lever
 									<br/><br/>
-									Date Created: {state.selectedFoundationalRisk.sys_created_on}
+									Date Created: {state.selectedRiskLever.sys_created_on}
 									<br/><br/>
-									Created By: {state.selectedFoundationalRisk.sys_created_by}
+									Created By: {state.selectedRiskLever.sys_created_by}
 									<br/><br/>
-									Description: {state.selectedFoundationalRisk.description}
+									Description: {state.selectedRiskLever.description}
 									<br/><br/>
 									<span id="column">
 										<u>
@@ -410,45 +439,45 @@ const view = (state, { dispatch, updateState }) => {
 											Description
 										</u>
 										<br/>
-										{state.selectedFoundationalRisk.risk_level_descriptions.split(",")[0]}
+										{state.selectedRiskLever.risk_5_desc}
 										<br/>
-										{state.selectedFoundationalRisk.risk_level_descriptions.split(",")[1]}
+										{state.selectedRiskLever.risk_4_desc}
 										<br/>
-										{state.selectedFoundationalRisk.risk_level_descriptions.split(",")[2]}
+										{state.selectedRiskLever.risk_3_desc}
 										<br/>
-										{state.selectedFoundationalRisk.risk_level_descriptions.split(",")[3]}
+										{state.selectedRiskLever.risk_2_desc}
 										<br/>
-										{state.selectedFoundationalRisk.risk_level_descriptions.split(",")[4]}
+										{state.selectedRiskLever.risk_1_desc}
 									</span>
 									<span id="column">
 										<u>
 											Min
 										</u>
 										<br/>
-										{state.selectedFoundationalRisk.risk_level_mins.split(",")[0]}
+										{state.selectedRiskLever.min_exp_loss_5}
 										<br/>
-										{state.selectedFoundationalRisk.risk_level_mins.split(",")[1]}
+										{state.selectedRiskLever.min_exp_loss_4}
 										<br/>
-										{state.selectedFoundationalRisk.risk_level_mins.split(",")[2]}
+										{state.selectedRiskLever.min_exp_loss_3}
 										<br/>
-										{state.selectedFoundationalRisk.risk_level_mins.split(",")[3]}
+										{state.selectedRiskLever.min_exp_loss_2}
 										<br/>
-										{state.selectedFoundationalRisk.risk_level_mins.split(",")[4]}
+										{state.selectedRiskLever.min_exp_loss_1}
 									</span>
 									<span id="column">
 										<u>
 											Max
 										</u>
 										<br/>
-										{state.selectedFoundationalRisk.risk_level_max.split(",")[0]}
+										{state.selectedRiskLever.max_exp_loss_5}
 										<br/>
-										{state.selectedFoundationalRisk.risk_level_max.split(",")[1]}
+										{state.selectedRiskLever.max_exp_loss_4}
 										<br/>
-										{state.selectedFoundationalRisk.risk_level_max.split(",")[2]}
+										{state.selectedRiskLever.max_exp_loss_3}
 										<br/>
-										{state.selectedFoundationalRisk.risk_level_max.split(",")[3]}
+										{state.selectedRiskLever.max_exp_loss_2}
 										<br/>
-										{state.selectedFoundationalRisk.risk_level_max.split(",")[4]}
+										{state.selectedRiskLever.max_exp_loss_1}
 									</span>
 								</div>
 							) }
@@ -549,7 +578,7 @@ const view = (state, { dispatch, updateState }) => {
 										{state.selectedBusinessUnit.projects.length ? (
 											state.selectedBusinessUnit.projects.split(',').map((result) => (
 												<li>
-													{state.fetched_projects[result].number}
+													{state.fetched_projects[result].name}
 												</li>
 											))
 										) : (
@@ -593,7 +622,7 @@ const view = (state, { dispatch, updateState }) => {
 										{state.selectedBusinessUnit.projects.length ? (
 											state.selectedBusinessUnit.projects.split(',').map((result) => (
 												<li>
-													{state.fetched_projects[result].number}
+													{state.fetched_projects[result].name}
 												</li>
 											))
 										) : (
@@ -632,7 +661,7 @@ const view = (state, { dispatch, updateState }) => {
 			<div id="admin_control_panel">
 				{businessUnits}
 				<br/>
-				{foundationalRisks}
+				{riskLevers}
 			</div>
 		</div>
 	);
@@ -658,10 +687,10 @@ createCustomElement('x-524039-ai-risk-modules', {
 		MODAL_CLOSED: ({ updateState }) => {
 			updateState({
 				selectedBusinessUnit: null,
-				selectedFoundationalRisk: null,
-				createNewFR: false,
+				selectedRiskLever: null,
+				createNewRL: false,
 				createNewBU: false,
-				editFR: false,
+				editRL: false,
 				editBU: false,
 
 				risk_level_5_description: null,
@@ -713,7 +742,6 @@ createCustomElement('x-524039-ai-risk-modules', {
 					}
 				})
 			))
-			console.log(action.payload.result)
 			action.payload.result.map((bu) => (
 				bu.projects.split(",").map((project, index) => {
 					if (project !== null && project !== "") {
@@ -731,7 +759,6 @@ createCustomElement('x-524039-ai-risk-modules', {
 			successActionType: "GET_CONTROL_FETCHED",
 		}),
 		GET_CONTROL_FETCHED: ({state, action}) => {
-			console.log(state)
 			state.fetched_controls[action.payload.result.sys_id] = action.payload.result
 		},
 		GET_PROJECT: createHttpEffect("/api/now/table/:table/:sys_id", {
@@ -743,22 +770,22 @@ createCustomElement('x-524039-ai-risk-modules', {
 		},
 		'CREATE_NEW_BUSINESS_UNIT_METHOD': createNewBusinessUnitEffect,
 
-		// foundational risk handlers
-		GET_FOUNDATIONAL_RISKS: createHttpEffect("/api/now/table/:table", {
+		// risk lever handlers
+		GET_RISK_LEVERS: createHttpEffect("/api/now/table/:table", {
 			pathParams: ["table"],
-			startActionType: "GET_FOUNDATIONAL_RISKS_STARTED",
-			successActionType: "GET_FOUNDATIONAL_RISKS_FETCHED",
+			startActionType: "GET_RISK_LEVERS_STARTED",
+			successActionType: "GET_RISK_LEVERS_FETCHED",
 		}),
-		GET_FOUNDATIONAL_RISKS_STARTED: ({ updateState }) =>
-			updateState({ showFoundationalRisksLoading: true, editFR: false }),
-		GET_FOUNDATIONAL_RISKS_FETCHED: ({ action, updateState }) => {
+		GET_RISK_LEVERS_STARTED: ({ updateState }) =>
+			updateState({ showRiskLeversLoading: true, editRL: false }),
+		GET_RISK_LEVERS_FETCHED: ({ action, updateState }) => {
 			// action.payload.result.map((result) => (
 			// 	console.log(result)
 			// ))
-			updateState({ foundationalRisks: action.payload.result, showFoundationalRisksLoading: false });
+			updateState({ riskLevers: action.payload.result, showRiskLeversLoading: false });
 		},
-		'CREATE_NEW_FOUNDATIONAL_RISK_METHOD': createNewFoundationalRiskEffect,
-		'EDIT_FOUNDATIONAL_RISK_METHOD': editFoundationalRiskEffect,
+		'CREATE_NEW_RISK_LEVER_METHOD': createNewRiskLeverEffect,
+		'EDIT_RISK_LEVER_METHOD': editRiskLeverEffect,
 		'EDIT_BUSINESS_UNIT_METHOD': editBusinessUnitEffect,
 		'GET_BUSINESS_UNIT': getBusinessUnitEffect,
 		'CREATE': createHttpEffect("/api/now/table/:table",

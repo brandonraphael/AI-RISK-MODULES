@@ -9,7 +9,8 @@ import "@servicenow/now-dropdown";
 
 const foundationalRiskTable = "x_524039_pericrora_ai_foundational_risk";
 const businessUnitTable = "x_524039_pericrora_ai_business_unit";
-const masterIssueTable = "x_524039_pericrora_ai_master_issue";
+const controlTable = "x_524039_pericrora_ai_risk_control";
+const projectTable = "x_524039_pericrora_risk_project_ticket";
 
 const fetchTablesEffect = ({ properties, dispatch }) => {
 	dispatch("GET_FOUNDATIONAL_RISKS", {
@@ -19,6 +20,24 @@ const fetchTablesEffect = ({ properties, dispatch }) => {
 		table: businessUnitTable
 	});
 };
+
+const getControlEffect = ({ dispatch }) => {
+	action.payload.result.map((result) => (
+		result.controls.split(",").map((control) => {
+			if (control !== null && control !== "") {
+				console.log(result)
+				result.controls = "whate"
+				console.log(result)
+
+			}
+		})
+	))
+
+	dispatch("GET_CONTROL", {
+		table: controlTable,
+		sys_id: sys_id,
+	});
+}
 
 const createNewFoundationalRiskEffect = ({ state, dispatch }) => {
 	let name = state.name ? state.name : "";
@@ -124,19 +143,6 @@ const editBusinessUnitEffect = ({ state, dispatch }) => {
 	let name = state.name ? state.name : "";
 	let description = state.description ? state.description : "";
 	let goal = state.goal ? state.goal : "";
-	console.log(state)
-	console.log(state.ai_master_issues)
-	console.log( state.selectedBusinessUnit.ai_master_issues);
-	let ai_master_issues = "";
-	{state.ai_master_issues.length ? (
-		state.ai_master_issues.map((result) => (
-			result === null ? null : ai_master_issues.length === 0 ? ai_master_issues = result : ai_master_issues = ai_master_issues + "," + result
-		))
-	) : (
-		ai_master_issues = null
-	)}
-
-	ai_master_issues ? ai_master_issues = ai_master_issues : ai_master_issues = state.selectedBusinessUnit.ai_master_issues;
 
 	dispatch("EDIT",
 		{
@@ -147,7 +153,6 @@ const editBusinessUnitEffect = ({ state, dispatch }) => {
 					name: name,
 					goal: goal,
 					description: description,
-					ai_master_issues: ai_master_issues
 				}
 		}
 	);
@@ -539,25 +544,12 @@ const view = (state, { dispatch, updateState }) => {
 									<br/><br/>
 									Description: <textarea value={state.selectedBusinessUnit.description} onchange={(e) => updateState({ description: e.target.value })}></textarea>
 									<br/><br/>
-									Linked Master Issues(s):
-									<ul>
-										{state.selectedBusinessUnit.ai_master_issues.length ? (
-											state.selectedBusinessUnit.ai_master_issues.split(',').map((result) => (
-												<li>
-													{result}<now-button on-click={() => updateState({ ai_master_issues: state.selectedBusinessUnit.ai_master_issues.split(',').map((i) => (i === result ? null : i))})}>Remove</now-button>
-												</li>
-											))
-										) : (
-											<p>NONE</p>
-										)}
-									</ul>
-									<br/><br/>
 									Linked Project(s):
 									<ul>
 										{state.selectedBusinessUnit.projects.length ? (
 											state.selectedBusinessUnit.projects.split(',').map((result) => (
 												<li>
-													{result}
+													{state.fetched_projects[result].number}
 												</li>
 											))
 										) : (
@@ -570,7 +562,7 @@ const view = (state, { dispatch, updateState }) => {
 										{state.selectedBusinessUnit.controls.length ? (
 											state.selectedBusinessUnit.controls.split(',').map((result) => (
 												<li>
-													{result}
+													{state.fetched_controls[result].name}
 												</li>
 											))
 										) : (
@@ -596,25 +588,12 @@ const view = (state, { dispatch, updateState }) => {
 									<br/><br/>
 									Description: {state.selectedBusinessUnit.description}
 									<br/><br/>
-									Linked Master Issues(s):
-									<ul>
-										{state.selectedBusinessUnit.ai_master_issues.length ? (
-											state.selectedBusinessUnit.ai_master_issues.split(',').map((result) => (
-												<li>
-													{result}
-												</li>
-											))
-										) : (
-											<p>NONE</p>
-										)}
-									</ul>
-									<br/><br/>
 									Linked Project(s):
 									<ul>
 										{state.selectedBusinessUnit.projects.length ? (
 											state.selectedBusinessUnit.projects.split(',').map((result) => (
 												<li>
-													{result}
+													{state.fetched_projects[result].number}
 												</li>
 											))
 										) : (
@@ -627,7 +606,7 @@ const view = (state, { dispatch, updateState }) => {
 										{state.selectedBusinessUnit.controls.length ? (
 											state.selectedBusinessUnit.controls.split(',').map((result) => (
 												<li>
-													{result}
+													{state.fetched_controls[result].name}
 												</li>
 											))
 										) : (
@@ -707,6 +686,7 @@ createCustomElement('x-524039-ai-risk-modules', {
 				description: null,
 
 				goal: null,
+				sys_id: null,
 			});
 		},
 
@@ -721,8 +701,45 @@ createCustomElement('x-524039-ai-risk-modules', {
 		}),
 		GET_BUSINESS_UNITS_STARTED: ({ updateState }) =>
 			updateState({ showBusinessUnitsLoading: true, editBU: false  }),
-		GET_BUSINESS_UNITS_FETCHED: ({ action, updateState }) => {
-			updateState({ businessUnits: action.payload.result, showBusinessUnitsLoading: false });
+		GET_BUSINESS_UNITS_FETCHED: ({ action, updateState, dispatch }) => {
+			updateState({ businessUnits: action.payload.result, showBusinessUnitsLoading: false, fetched_controls: {}, fetched_projects: {} })
+			action.payload.result.map((bu) => (
+				bu.controls.split(",").map((control, index) => {
+					if (control !== null && control !== "") {
+						dispatch("GET_CONTROL", {
+							table: controlTable,
+							sys_id: control,
+						});
+					}
+				})
+			))
+			console.log(action.payload.result)
+			action.payload.result.map((bu) => (
+				bu.projects.split(",").map((project, index) => {
+					if (project !== null && project !== "") {
+						dispatch("GET_PROJECT", {
+							table: projectTable,
+							sys_id: project,
+						});
+					}
+				})
+			))
+			updateState({ fetched_controls: {} })
+		},
+		GET_CONTROL: createHttpEffect("/api/now/table/:table/:sys_id", {
+			pathParams: ["table", "sys_id"],
+			successActionType: "GET_CONTROL_FETCHED",
+		}),
+		GET_CONTROL_FETCHED: ({state, action}) => {
+			console.log(state)
+			state.fetched_controls[action.payload.result.sys_id] = action.payload.result
+		},
+		GET_PROJECT: createHttpEffect("/api/now/table/:table/:sys_id", {
+			pathParams: ["table", "sys_id"],
+			successActionType: "GET_PROJECT_FETCHED",
+		}),
+		GET_PROJECT_FETCHED: ({state, action}) => {
+			state.fetched_projects[action.payload.result.sys_id] = action.payload.result
 		},
 		'CREATE_NEW_BUSINESS_UNIT_METHOD': createNewBusinessUnitEffect,
 

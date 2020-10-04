@@ -8,6 +8,10 @@ import "@servicenow/now-loader";
 import "@servicenow/now-dropdown";
 
 const riskLeverTable = "x_524039_pericrora_ai_risk_lever";
+const reputationalRiskId = "51addb452f6f50109f9611c82799b6dc";
+const financialRiskId = "b6bd13852f6f50109f9611c82799b684";
+const legalRiskId = "fa8d5f452f6f50109f9611c82799b61e";
+
 
 const businessUnitTable = "x_524039_pericrora_ai_business_unit";
 const controlTable = "x_524039_pericrora_ai_risk_control";
@@ -26,24 +30,6 @@ const fetchTablesEffect = ({ properties, dispatch }) => {
 		table: scoringRubricsTable
 	});
 };
-
-const getControlEffect = ({ dispatch }) => {
-	action.payload.result.map((result) => (
-		result.controls.split(",").map((control) => {
-			if (control !== null && control !== "") {
-				console.log(result)
-				result.controls = "whate"
-				console.log(result)
-
-			}
-		})
-	))
-
-	dispatch("GET_CONTROL", {
-		table: controlTable,
-		sys_id: sys_id,
-	});
-}
 
 const createNewRiskLeverEffect = ({ state, dispatch }) => {
 	let name = state.name ? state.name : "";
@@ -80,7 +66,18 @@ const editRiskLeverEffect = ({ state, dispatch }) => {
 	);
 
 	dispatch("MODAL_CLOSED");
-}
+};
+
+const deleteRiskLeverEffect = ({ state, dispatch }) => {
+	dispatch("DELETE",
+		{
+			table: riskLeverTable,
+			sys_id: state.selectedRiskLever.sys_id
+		}
+	);
+
+	dispatch("MODAL_CLOSED");
+};
 
 const editScoringRubricEffect = ({ state, dispatch }) => {
 	let name = state.name ? state.name : "";
@@ -176,6 +173,17 @@ const editBusinessUnitEffect = ({ state, dispatch }) => {
 	dispatch("MODAL_CLOSED");
 }
 
+const deleteBusinessUnitEffect = ({ state, dispatch }) => {
+	dispatch("DELETE",
+		{
+			table: businessUnitTable,
+			sys_id: state.selectedBusinessUnit.sys_id
+		}
+	);
+
+	dispatch("MODAL_CLOSED");
+}
+
 const getBusinessUnitEffect = ({ state, dispatch }) => {
 	dispatch("GET",
 		{
@@ -253,6 +261,12 @@ const view = (state, { dispatch, updateState }) => {
 									variant: "primary",
 									clickActionType: "EDIT_RISK_LEVER_METHOD",
 									disabled: !state.editRL,
+								},
+								{
+									label: "Delete",
+									variant: "primary-negative",
+									clickActionType: "DELETE_RISK_LEVER_METHOD",
+									disabled: state.selectedRiskLever.sys_id==reputationalRiskId || state.selectedRiskLever.sys_id==financialRiskId || state.selectedRiskLever.sys_id==legalRiskId,
 								},
 							]}
 						>
@@ -362,6 +376,12 @@ const view = (state, { dispatch, updateState }) => {
 									variant: "primary",
 									clickActionType: "EDIT_BUSINESS_UNIT_METHOD",
 									disabled: !state.editBU,
+								},
+								{
+									label: "Delete",
+									variant: "primary-negative",
+									clickActionType: "DELETE_BUSINESS_UNIT_METHOD",
+									disabled: false,
 								},
 							]}
 
@@ -804,16 +824,19 @@ createCustomElement('x-524039-ai-risk-modules', {
 		GET_RISK_LEVERS_STARTED: ({ updateState }) =>
 			updateState({ showRiskLeversLoading: true, editRL: false }),
 		GET_RISK_LEVERS_FETCHED: ({ action, updateState }) => {
-			// action.payload.result.map((result) => (
-			// 	console.log(result)
-			// ))
+			action.payload.result.map((result) => (
+				console.log(result)
+			))
 			updateState({ riskLevers: action.payload.result, showRiskLeversLoading: false });
 		},
 		'CREATE_NEW_RISK_LEVER_METHOD': createNewRiskLeverEffect,
 		'EDIT_RISK_LEVER_METHOD': editRiskLeverEffect,
 		'EDIT_BUSINESS_UNIT_METHOD': editBusinessUnitEffect,
 		'EDIT_SCORING_RUBRIC_METHOD': editScoringRubricEffect,
+		'DELETE_RISK_LEVER_METHOD': deleteRiskLeverEffect,
+		'DELETE_BUSINESS_UNIT_METHOD': deleteBusinessUnitEffect,
 		'GET_BUSINESS_UNIT': getBusinessUnitEffect,
+
 		'CREATE': createHttpEffect("/api/now/table/:table",
 			{
 				pathParams: ["table"],
@@ -833,10 +856,16 @@ createCustomElement('x-524039-ai-risk-modules', {
 		'GET': createHttpEffect("/api/now/table/:table/:sys_id",
 			{
 				pathParams: ["table", "sys_id"],
-				method: 'GET',
-				successActionType: 'GET_SUCCESS'
+				method: 'GET'
 			}
-		)
+		),
+		'DELETE': createHttpEffect("/api/now/table/:table/:sys_id",
+			{
+				pathParams: ["table", "sys_id"],
+				method: 'DELETE',
+				successActionType: 'SUCCESS'
+			}
+		),
 	},
 	styles
 });

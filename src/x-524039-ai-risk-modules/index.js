@@ -681,9 +681,9 @@ const view = (state, { dispatch, updateState }) => {
 		<div>
 			<h1 id="admin_control_panel_title">
 				Admin Control Panel
-				<now-button id="create_ticket">
+				{/*<now-button id="create_ticket">
 					Create Ticket
-				</now-button>
+				</now-button>*/}
 			</h1>
 			<div id="admin_control_panel">
 				{businessUnits}

@@ -498,7 +498,7 @@ const view = (state, { dispatch, updateState }) => {
 						state.scoringRubrics.map((result) => (
 							<li id="list_item">
 								{result.name}
-								<now-button id="view" on-click={() => updateState({ selectedScoringRubric: result })}>View {result.name}</now-button>
+								<now-button id="view" on-click={() => updateState({ selectedScoringRubric: result })}>View</now-button>
 							</li>
 						))
 					) : (

@@ -19,7 +19,7 @@ const projectTable = "x_524039_pericrora_risk_project_ticket";
 
 const scoringRubricsTable = "x_524039_pericrora_ai_impact_scoring_rubric";
 
-const fetchTablesEffect = ({ properties, dispatch }) => {
+const fetchTablesEffect = ({ properties, dispatch, updateState }) => {
 	dispatch("GET_RISK_LEVERS", {
 		table: riskLeverTable,
 	});
@@ -210,13 +210,13 @@ const view = (state, { dispatch, updateState }) => {
 						state.riskLevers.map((result) => (
 							<li id="list_item">
 								{result.name}
-								<now-button id="view" on-click={() => updateState({ selectedRiskLever: result })}>View</now-button>
+								<now-button id="view" on-click={() => updateState({ selectedRiskLever: result, nameEmpty: false, descriptionEmpty: false })}>View</now-button>
 							</li>
 						))
 					) : (
 						<li>No Risk Levers Found</li>
 					)}
-					<now-button id="create_new" on-click={() => updateState({ createNewRL: true })}>Create New RL</now-button>
+					<now-button id="create_new" on-click={() => updateState({ createNewRL: true, nameEmpty: true, descriptionEmpty: true })}>Create New RL</now-button>
 					{state.createNewRL ? (
 						<now-modal
 							opened={state.createNewRL}
@@ -231,18 +231,19 @@ const view = (state, { dispatch, updateState }) => {
 									label: "Create",
 									variant: "primary",
 									clickActionType: "CREATE_NEW_RISK_LEVER_METHOD",
+									disabled: state.nameEmpty || state.descriptionEmpty,
 								},
 							]}
 						>
 							<h1>
 								Create New Risk Lever
 							</h1>
-							Risk Name:
-							<input onchange={(e) => updateState({ name: e.target.value })}></input>
+							Risk Name{state.nameEmpty ? (<span id="required">*</span>) : null}:
+							<input onchange={(e) => updateState({ name: e.target.value, nameEmpty: e.target.value.length == 0 })}></input>
 							<br/>
-							Description
+							Description{state.descriptionEmpty ? (<span id="required">*</span>) : null}:
 							<br/>
-							<textarea onchange={(e) => updateState({ description: e.target.value })}></textarea>
+							<textarea onchange={(e) => updateState({ description: e.target.value, descriptionEmpty: e.target.value.length == 0 })}></textarea>
 						</now-modal>
 					) : null}
 
@@ -260,7 +261,7 @@ const view = (state, { dispatch, updateState }) => {
 									label: "Update",
 									variant: "primary",
 									clickActionType: "EDIT_RISK_LEVER_METHOD",
-									disabled: !state.editRL,
+									disabled: !state.editRL || state.nameEmpty || state.descriptionEmpty,
 								},
 								{
 									label: "Delete",
@@ -274,17 +275,17 @@ const view = (state, { dispatch, updateState }) => {
 								<div>
 									<h1>
 										Editing: {state.selectedRiskLever.name}
-										<now-button id="edit" on-click={() => updateState({ editRL: !state.editRL })}>{state.editRL ? "Cancel" : "Edit"}</now-button>
+										<now-button id="edit" on-click={() => updateState({ editRL: !state.editRL, nameEmpty: false, descriptionEmpty: false })}>Cancel</now-button>
 									</h1>
 									Risk Lever
 									<br/><br/>
-									Name: <input value={state.selectedRiskLever.name} onchange={(e) => updateState({ name: e.target.value })}></input>
+									Name{state.nameEmpty ? (<span id="required">*</span>) : null}: <input value={state.selectedRiskLever.name} onchange={(e) => updateState({ name: e.target.value, nameEmpty: e.target.value.length == 0  })}></input>
 									<br/><br/>
 									Date Created: {state.selectedRiskLever.sys_created_on}
 									<br/><br/>
 									Created By: {state.selectedRiskLever.sys_created_by}
 									<br/><br/>
-									Description: <textarea value={state.selectedRiskLever.description} onchange={(e) => updateState({ description: e.target.value })}></textarea>
+									Description{state.descriptionEmpty ? (<span id="required">*</span>) : null}: <textarea value={state.selectedRiskLever.description} onchange={(e) => updateState({ description: e.target.value, descriptionEmpty: e.target.value.length == 0  })}></textarea>
 								</div>
 								) : (
 								<div>
@@ -323,13 +324,13 @@ const view = (state, { dispatch, updateState }) => {
 						state.businessUnits.map((result) => (
 							<li id="list_item">
 								{result.name}
-								<now-button id="view" on-click={() => updateState({ selectedBusinessUnit: result })}>View</now-button>
+								<now-button id="view" on-click={() => updateState({ selectedBusinessUnit: result, nameEmpty: false, descriptionEmpty: false, goalEmpty: false })}>View</now-button>
 							</li>
 						))
 					) : (
 						<li>No Business Units Found</li>
 					)}
-					<now-button id="create_new" on-click={() => updateState({ createNewBU: true })}>Create New BU</now-button>
+					<now-button id="create_new" on-click={() => updateState({ createNewBU: true, nameEmpty: true, descriptionEmpty: true, goalEmpty: true })}>Create New BU</now-button>
 					{state.createNewBU ? (
 						<now-modal
 							opened={state.createNewBU}
@@ -344,21 +345,22 @@ const view = (state, { dispatch, updateState }) => {
 									label: "Create",
 									variant: "primary",
 									clickActionType: "CREATE_NEW_BUSINESS_UNIT_METHOD",
+									disabled: state.nameEmpty || state.descriptionEmpty || state.goalEmpty
 								},
 							]}
 						>
 							<h1>
 								Create New Business Unit
 							</h1>
-							Business Unit Name:
-							<input onchange={(e) => updateState({ name: e.target.value })}></input>
+							Business Unit Name{state.nameEmpty ? (<span id="required">*</span>): null}:
+							<input onchange={(e) => updateState({ name: e.target.value, nameEmpty: e.target.value.length == 0 })}></input>
 							<br/><br/>
-							Goal:
-							<textarea onchange={(e) => updateState({ goal: e.target.value })}></textarea>
+							Goal{state.goalEmpty ? (<span id="required">*</span>): null}:
+							<textarea onchange={(e) => updateState({ goal: e.target.value, goalEmpty: e.target.value.length == 0  })}></textarea>
 							<br/><br/>
-							Description
+							Description{state.descriptionEmpty ? (<span id="required">*</span>): null}:
 							<br/><br/>
-							<textarea onchange={(e) => updateState({ description: e.target.value })}></textarea>
+							<textarea onchange={(e) => updateState({ description: e.target.value, descriptionEmpty: e.target.value.length == 0  })}></textarea>
 						</now-modal>
 					) : null}
 					{state.selectedBusinessUnit ? (
@@ -375,7 +377,7 @@ const view = (state, { dispatch, updateState }) => {
 									label: "Update",
 									variant: "primary",
 									clickActionType: "EDIT_BUSINESS_UNIT_METHOD",
-									disabled: !state.editBU,
+									disabled: !state.editBU || state.nameEmpty || state.descriptionEmpty || state.goalEmpty,
 								},
 								{
 									label: "Delete",
@@ -390,20 +392,20 @@ const view = (state, { dispatch, updateState }) => {
 								<div>
 									<h1>
 										Editing: {state.selectedBusinessUnit.name}
-										<now-button id="edit" on-click={() => updateState({ editBU: !state.editBU })}>{state.editBU ? "Cancel" : "Edit"}</now-button>
+										<now-button id="edit" on-click={() => updateState({ editBU: !state.editBU, nameEmpty: false, descriptionEmpty: false, goalEmpty: false })}>Cancel</now-button>
 									</h1>
 									Business Unit
 									<br/><br/>
-									Name: <input value={state.selectedBusinessUnit.name} onchange={(e) => updateState({ name: e.target.value })}></input>
+									Name{state.nameEmpty ? (<span id="required">*</span>): null}: <input value={state.selectedBusinessUnit.name} onchange={(e) => updateState({ name: e.target.value, nameEmpty: e.target.value.length == 0  })}></input>
 									<br/><br/>
 									Date Created: {state.selectedBusinessUnit.sys_created_on}
 									<br/><br/>
 									Created By: {state.selectedBusinessUnit.sys_created_by}
 									<br/><br/>
-									Goal:
-									<textarea value={state.selectedBusinessUnit.goal} onchange={(e) => updateState({ goal: e.target.value })}></textarea>
+									Goal{state.goalEmpty ? (<span id="required">*</span>): null}:
+									<textarea value={state.selectedBusinessUnit.goal} onchange={(e) => updateState({ goal: e.target.value, goalEmpty: e.target.value.length == 0  })}></textarea>
 									<br/><br/>
-									Description: <textarea value={state.selectedBusinessUnit.description} onchange={(e) => updateState({ description: e.target.value })}></textarea>
+									Description{state.descriptionEmpty ? (<span id="required">*</span>): null}: <textarea value={state.selectedBusinessUnit.description} onchange={(e) => updateState({ description: e.target.value, descriptionEmpty: e.target.value.length == 0  })}></textarea>
 									<br/><br/>
 									Linked Project(s):
 									<ul>
@@ -743,10 +745,13 @@ createCustomElement('x-524039-ai-risk-modules', {
 				risk_level_1_max: null,
 
 				name: null,
-				description: null,
-
 				goal: null,
 				sys_id: null,
+				description: null,
+
+				nameEmpty: true,
+				descriptionEmpty: true,
+				goalEmpty: true,
 			});
 		},
 

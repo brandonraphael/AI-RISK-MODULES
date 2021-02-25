@@ -2,4 +2,4 @@
 ===============================================
 
 
-Component Authors, provide some documentation for your users here!
+AI Risk Management application to be used through Service Now's app store
